@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.PokedexFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.RangeFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.TripFragment;
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTitle = mDrawerTitle = getTitle();
-        mPlanetTitles = new String[]{"Trip", "Range", "Options", "Stats", "Exit"};//getResources().getStringArray(R.array.planets_array);
+        mPlanetTitles = new String[]{"Trip","Pokedex", "Range", "Options", "Stats", "Exit"};//getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -178,6 +179,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "switchToFragment - controller");
                 fragment = RangeFragment.newInstance();
                 break;
+            case Config.FRAGMENT.POKEDEX:
+                Log.v(TAG, "switchToFragment - POKEDEX");
+                fragment = PokedexFragment.newInstance();
+                break;
+
 //            case Config.FRAGMENT_SETTINGS:
 //                Log.v(TAG, "switchToFragment - settings");
 //                fragment = SettingsFragment.newInstance();

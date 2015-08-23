@@ -10,6 +10,7 @@ public class Config {
         int RANGE = 1;
         int OPTIONS = 2;
         int STATS = 3;
+        int POKEDEX = 4;
     }
 
     public static FRAGMENT CURRENT_FRAGMENT;
