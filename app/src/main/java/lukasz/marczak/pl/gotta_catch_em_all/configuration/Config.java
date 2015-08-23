@@ -2,15 +2,21 @@ package lukasz.marczak.pl.gotta_catch_em_all.configuration;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
+ *
  */
 public class Config {
 
+    public static String[] HEADERS = {"Trip", "Pokedex", "Range", "Options", "Stats", "Exit"};
+    public final static int MORE_POKES = 8;
+    public final static int MAX_POKES = 150;
+
     public interface FRAGMENT {
         int TRIP = 0;
-        int RANGE = 1;
-        int OPTIONS = 2;
-        int STATS = 3;
-        int POKEDEX = 4;
+        int POKEDEX = 1;
+        int RANGE = 2;
+        int OPTIONS = 3;
+        int STATS = 4;
+        int EXIT = 5;
     }
 
     public static FRAGMENT CURRENT_FRAGMENT;

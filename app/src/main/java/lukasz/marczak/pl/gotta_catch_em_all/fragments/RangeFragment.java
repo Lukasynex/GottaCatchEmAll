@@ -145,7 +145,6 @@ public class RangeFragment extends Fragment {
 
         if (beaconUtils.isBluetoothOn() && beaconUtils.isBluetoothLeSupported()) {
             beaconScanner.scanLeDevice(-1, true);
-            beaconScanner.startWithWhorl(true);
         }
     }
 
@@ -163,6 +162,8 @@ public class RangeFragment extends Fragment {
         View view = inflater.inflate(R.layout.template_recyclerview, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         whorlView = (WhorlView) view.findViewById(R.id.whorl2);
+        whorlView.start();
+
         if (beaconScanner != null)
             beaconScanner.setWhorlView(whorlView);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -179,8 +180,6 @@ public class RangeFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-
-
     }
     // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {

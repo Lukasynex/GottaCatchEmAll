@@ -16,7 +16,7 @@ public class NetPoke {
     }
 
     public String getName() {
-        return name;
+        return  name;
     }
 
     public NetPoke(int ID, String name) {

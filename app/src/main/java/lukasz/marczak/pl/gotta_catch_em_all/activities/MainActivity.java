@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTitle = mDrawerTitle = getTitle();
-        mPlanetTitles = new String[]{"Trip","Pokedex", "Range", "Options", "Stats", "Exit"};//getResources().getStringArray(R.array.planets_array);
+        mPlanetTitles = Config.HEADERS;//getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

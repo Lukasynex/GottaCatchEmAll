@@ -74,14 +74,10 @@ public class BLEScanner {
     }
 
     public void startWithWhorl(boolean ifStart) {
-        if (!ifStart || whorlView != null) {
-            whorlView.setVisibility(View.GONE);
-        }
+
     }
 
     public void setWhorlView(WhorlView view) {
         whorlView = view;
-        if (!whorlView.isCircling())
-            whorlView.start();
     }
 }

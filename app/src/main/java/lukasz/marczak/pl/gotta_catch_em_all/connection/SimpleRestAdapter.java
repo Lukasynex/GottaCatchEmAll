@@ -7,11 +7,7 @@ import com.google.gson.JsonDeserializer;
 import java.lang.reflect.Type;
 
 import retrofit.RestAdapter;
-import retrofit.converter.ConversionException;
-import retrofit.converter.Converter;
 import retrofit.converter.GsonConverter;
-import retrofit.mime.TypedInput;
-import retrofit.mime.TypedOutput;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
@@ -25,8 +21,8 @@ public class SimpleRestAdapter {
 
     private RestAdapter adapter;
 
-    public Pokedex getPokedexService(){
-        return adapter.create(Pokedex.class);
+    public PokedexService getPokedexService(){
+        return adapter.create(PokedexService.class);
     }
     /**
      * bieda version
