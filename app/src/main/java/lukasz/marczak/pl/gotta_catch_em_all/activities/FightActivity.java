@@ -1,6 +1,7 @@
 package lukasz.marczak.pl.gotta_catch_em_all.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +12,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.BitSet;
+
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
 import lukasz.marczak.pl.gotta_catch_em_all.data.Pokemon;
 
@@ -29,6 +35,8 @@ public class FightActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_fight);
         wildPokemon = (ImageView) findViewById(R.id.wild_pokemon);
+
+
         title = (TextView) findViewById(R.id.title);
         wildPokemon.setVisibility(View.GONE);
 
@@ -79,7 +87,8 @@ public class FightActivity extends AppCompatActivity {
         }
 
     }
-    private void onStartFightActivity(Intent data){
+
+    private void onStartFightActivity(Intent data) {
         String mac = data.getStringExtra(BeaconsInfo.Bundler.MAC);
 
 
@@ -92,22 +101,38 @@ public class FightActivity extends AppCompatActivity {
 //                    BaconsInfo.PokeManager.addNewPoke(pokemon);
 
         BeaconsInfo.PokeManager.addNewPoke(pokemon);
-        wildPokemon.setImageResource(pokemon.getImageResource());
+
+        long millis = System.currentTimeMillis();
+        int randomPokemonID = ((int) millis % 150) + 1;
+
+        Picasso.with(this)
+                .load(PokeUtils.getPokeResByID(randomPokemonID))
+                .into(wildPokemon);
         wildPokemon.setVisibility(View.VISIBLE);
         startFight();
     }
+
     private void startFight() {
         Log.d(TAG, "startFight()");
         handler.postDelayed(fightBody(), 5000); //delay of 5 seconds
     }
 
     private Runnable fightBody() {
-       return new Runnable() {
-           @Override
-           public void run() {
-               wildPokemon.setVisibility(View.GONE);
-               title.setText("Fight started!!!");
-           }
-       };
+        Log.d(TAG, "fight Body()");
+        return new Runnable() {
+            @Override
+            public void run() {
+                wildPokemon.setVisibility(View.GONE);
+                title.setText("Fight started!!!");
+            }
+        };
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d(TAG, "onBackPressed()");
+        BeaconsInfo.FORCE_STOP_SCAN = false;
+        BeaconsInfo.NEW_FIGHT = false;
     }
 }

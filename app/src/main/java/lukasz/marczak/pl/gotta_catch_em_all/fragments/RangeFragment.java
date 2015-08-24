@@ -1,11 +1,14 @@
 package lukasz.marczak.pl.gotta_catch_em_all.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,12 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.tt.whorlviewlibrary.WhorlView;
 
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.BeaconAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.bluetooth.BLEScanner;
 import lukasz.marczak.pl.gotta_catch_em_all.bluetooth.BluetoothUtils;
@@ -41,8 +46,9 @@ public class RangeFragment extends Fragment {
     private WhorlView whorlView;
     private static BLEScanner beaconScanner;
     private static BluetoothUtils beaconUtils;
-    private static RecyclerView recyclerView;
-
+    private static TextView timeLeft;
+    private static TextView timeLeftDescription;
+    private Handler handler = new Handler();
     private DetectedBeacons detectedBeacons = new DetectedBeacons(getActivity());
     private BeaconAdapter beaconAdapter;
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
@@ -74,17 +80,7 @@ public class RangeFragment extends Fragment {
                         Log.d(TAG, "Major: " + iBeacon.getMajor());
 
                         if (iBeacon.getDistanceDescriptor().toString().equals("IMMEDIATE")) {
-                            whorlView.stop();
-                            whorlView.setVisibility(View.GONE);
-
-                            BeaconsInfo.FORCE_STOP_SCAN = true;
-                            Intent fightIntent = new Intent(getActivity(), FightActivity.class);
-                            fightIntent.putExtra(BeaconsInfo.Bundler.MAC, deviceLe.getAddress());
-                            fightIntent.putExtra(BeaconsInfo.Bundler.MINOR, iBeacon.getMinor());
-                            fightIntent.putExtra(BeaconsInfo.Bundler.MAJOR, iBeacon.getMajor());
-                            fightIntent.putExtra(BeaconsInfo.Bundler.CALIBRATED_POWER, iBeacon.getCalibratedTxPower());
-                            fightIntent.putExtra(BeaconsInfo.Bundler.ACCURACY, iBeacon.getAccuracy());
-                            startActivityForResult(fightIntent, Config.IntentCode.START_WILD_FIGHT);
+                            startWildPokemonFight(deviceLe, iBeacon);
                         }
                     }
 
@@ -96,6 +92,24 @@ public class RangeFragment extends Fragment {
             });
         }
     };
+
+    private void startWildPokemonFight(BluetoothLeDevice deviceLe, IBeaconDevice iBeacon) {
+        if(BeaconsInfo.NEW_FIGHT)
+            return;
+        BeaconsInfo.NEW_FIGHT= true;
+        whorlView.stop();
+        whorlView.setVisibility(View.GONE);
+
+        BeaconsInfo.FORCE_STOP_SCAN = true;
+        Intent fightIntent = new Intent(getActivity(), FightActivity.class);
+        fightIntent.putExtra(BeaconsInfo.Bundler.MAC, deviceLe.getAddress());
+        fightIntent.putExtra(BeaconsInfo.Bundler.MINOR, iBeacon.getMinor());
+        fightIntent.putExtra(BeaconsInfo.Bundler.MAJOR, iBeacon.getMajor());
+        fightIntent.putExtra(BeaconsInfo.Bundler.CALIBRATED_POWER, iBeacon.getCalibratedTxPower());
+        fightIntent.putExtra(BeaconsInfo.Bundler.ACCURACY, iBeacon.getAccuracy());
+        startActivityForResult(fightIntent, Config.IntentCode.START_WILD_FIGHT);
+
+    }
 
 
 //    private OnFragmentInteractionListener mListener;
@@ -125,23 +139,25 @@ public class RangeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Log.d(TAG, "onCreate()");
-        Loop.start(this);
-    }
 
+        beaconUtils = new BluetoothUtils(getActivity());
+//        beaconUtils.askUserToEnableBluetoothIfNeeded();
+
+    }
 
     public void restartScan() {
         if (BeaconsInfo.FORCE_STOP_SCAN)
             return;
         Log.d(TAG, "resetScan()");
+        timeLeftDescription.setOnClickListener(null);
 
+        int value = Integer.valueOf(timeLeft.getText().toString());
+        timeLeft.setText(String.valueOf(value - 1));
         if (beaconScanner != null && beaconScanner.isScanning()) {
             beaconScanner.forceStopScan();
         }
 
-        beaconUtils = new BluetoothUtils(getActivity());
         beaconScanner = new BLEScanner(mLeScanCallback, beaconUtils);
-
-        beaconUtils.askUserToEnableBluetoothIfNeeded();
 
         if (beaconUtils.isBluetoothOn() && beaconUtils.isBluetoothLeSupported()) {
             beaconScanner.scanLeDevice(-1, true);
@@ -152,6 +168,31 @@ public class RangeFragment extends Fragment {
     public void onStart() {
         Log.d(TAG, "onStart()");
         super.onStart();
+        setupScanOnStart();
+    }
+
+    public void setupScanOnStart() {
+
+        timeLeft.setText(String.valueOf(BeaconsInfo.SCANTIME));
+        timeLeft.setVisibility(View.GONE);
+        timeLeftDescription.setText("Click to start scan");
+        timeLeftDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick()");
+                if (beaconUtils.isBluetoothOn() && beaconUtils.isBluetoothLeSupported()) {
+                    Loop.start(RangeFragment.this);
+                    timeLeftDescription.setText("Scanning...");
+                    timeLeft.setVisibility(View.VISIBLE);
+                    whorlView.setVisibility(View.VISIBLE);
+                    if (!whorlView.isCircling())
+                        whorlView.start();
+
+                } else {
+                    beaconUtils.askUserToEnableBluetoothIfNeeded();
+                }
+            }
+        });
     }
 
     @Override
@@ -160,18 +201,12 @@ public class RangeFragment extends Fragment {
         Log.d(TAG, "onCreateView()");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.template_recyclerview, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        timeLeftDescription = (TextView) view.findViewById(R.id.timeLeftDescription);
+        timeLeft = (TextView) view.findViewById(R.id.timeLeft);
         whorlView = (WhorlView) view.findViewById(R.id.whorl2);
-        whorlView.start();
-
-        if (beaconScanner != null)
-            beaconScanner.setWhorlView(whorlView);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
+        whorlView.setVisibility(View.GONE);
 
         beaconAdapter = new BeaconAdapter(getActivity(), detectedBeacons);
-        recyclerView.setAdapter(beaconAdapter);
-        recyclerView.setVisibility(View.GONE);
 
         return view;
     }
@@ -181,30 +216,17 @@ public class RangeFragment extends Fragment {
         Log.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
     }
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
 
     @Override
     public void onAttach(Activity activity) {
         Log.d(TAG, "onAttach()");
         super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
     public void onDetach() {
         Log.d(TAG, "onDetach()");
         super.onDetach();
-//        mListener = null;
     }
 
     @Override
@@ -213,10 +235,30 @@ public class RangeFragment extends Fragment {
         super.onDestroy();
 
     }
+
+    public synchronized void buildNoPokemonsHereDialog() {
+
+        AlertDialog.Builder okno = new AlertDialog.Builder(this.getActivity());
+        okno.setMessage("No pokemons in range. Retry?");
+        okno.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                setupScanOnStart();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                ((MainActivity) getActivity()).selectItem(Config.FRAGMENT.TRIP);
+            }
+        });
+        okno.show();
+    }
 }
 
 class Loop {
-    private static int times = 30;
+    private static int times = Config.SCAN_TIME;
     private static String TAG = Loop.class.getSimpleName();
     private static boolean isStarted = false;
     private static Handler handler = new Handler();
@@ -229,8 +271,12 @@ class Loop {
             if (isActive) {
                 parent.restartScan();
                 times--;
-                handler.postDelayed(this, 2000); //LoopAction() is invoked every 2 seconds
-                if (times < 0 || BeaconsInfo.FORCE_STOP_SCAN)
+                handler.postDelayed(this, 1000); //LoopAction() is invoked every 2 seconds
+
+                if (times < 0) {
+                    parent.buildNoPokemonsHereDialog();
+                    isActive = false;
+                } else if (BeaconsInfo.FORCE_STOP_SCAN)
                     isActive = false;
             } else {
                 resetLoop();
@@ -243,7 +289,8 @@ class Loop {
         Log.d(TAG, "resetLoop()");
         handler.removeCallbacks(stepTimer);
         isStarted = false;
-        times = 30;
+        isActive = true;
+        times = Config.SCAN_TIME;
     }
 
     public static void start(RangeFragment rangeFragment) {

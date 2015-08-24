@@ -15,8 +15,6 @@ public class BLEScanner {
     private final BluetoothAdapter.LeScanCallback mLeScanCallback;
     private final BluetoothUtils mBluetoothUtils;
     private boolean mScanning;
-    private boolean scanWithWhorl;
-    private WhorlView whorlView;
 
 
     public BLEScanner(final BluetoothAdapter.LeScanCallback leScanCallback, final BluetoothUtils bluetoothUtils) {
@@ -50,7 +48,6 @@ public class BLEScanner {
                     @Override
                     public void run() {
                         Log.d("TAG", "~ Stopping Scan (timeout)");
-//                        hideWhorlView();
                         mScanning = false;
                         mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
                     }
@@ -60,24 +57,8 @@ public class BLEScanner {
             mBluetoothUtils.getBluetoothAdapter().startLeScan(mLeScanCallback);
         } else {
             Log.d("TAG", "~ Stopping Scan");
-            //hideWhorlView();
             mScanning = false;
             mBluetoothUtils.getBluetoothAdapter().stopLeScan(mLeScanCallback);
         }
-    }
-
-    private void hideWhorlView() {
-        if (whorlView != null) {
-            whorlView.stop();
-            whorlView.setVisibility(View.GONE);
-        }
-    }
-
-    public void startWithWhorl(boolean ifStart) {
-
-    }
-
-    public void setWhorlView(WhorlView view) {
-        whorlView = view;
     }
 }

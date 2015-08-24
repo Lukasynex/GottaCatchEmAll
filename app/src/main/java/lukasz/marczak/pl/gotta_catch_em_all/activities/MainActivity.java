@@ -2,6 +2,7 @@ package lukasz.marczak.pl.gotta_catch_em_all.activities;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] mPlanetTitles;
+    private String[] headers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTitle = mDrawerTitle = getTitle();
-        mPlanetTitles = Config.HEADERS;//getResources().getStringArray(R.array.planets_array);
+        headers = Config.HEADERS;//getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+                R.layout.drawer_list_item, headers));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -147,24 +148,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void selectItem(int position) {
-        // update the main content by replacing fragments
-        Fragment fragment = getFragmentForPosition(position);
-//        Bundle args = new Bundle();
-        //  args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-//        fragment.setArguments(args);
+    public void selectItem(int position) {
 
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        Fragment fragment = getFragmentForPosition(position);
 
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.fab_in,R.anim.fab_out,R.anim.fab_in,R.anim.fab_out)
                 .replace(R.id.content_frame, fragment)
                 .commit();
 
-        // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
+        setTitle(headers[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
@@ -172,11 +167,11 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment;
         switch (selectedFragment) {
             case Config.FRAGMENT.TRIP:
-                Log.v(TAG, "switchToFragment - google map");
+                Log.v(TAG, "switchToFragment - trip");
                 fragment = TripFragment.newInstance();
                 break;
             case Config.FRAGMENT.RANGE:
-                Log.v(TAG, "switchToFragment - controller");
+                Log.v(TAG, "switchToFragment - range");
                 fragment = RangeFragment.newInstance();
                 break;
             case Config.FRAGMENT.POKEDEX:
@@ -228,5 +223,12 @@ public class MainActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "request code: " + requestCode);
+        Log.d(TAG, "result code: " + resultCode);
     }
 }

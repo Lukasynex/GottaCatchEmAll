@@ -20,6 +20,7 @@
         android:padding="20sp"
         android:layout_width="300sp"
         android:layout_height="300sp"
-        android:src="@drawable/unknown" />
+
+        android:src="@drawable/unknown"/>
 
 </RelativeLayout>

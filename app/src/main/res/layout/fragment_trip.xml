@@ -1,10 +1,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffa148"
     tools:context="lukasz.marczak.pl.gotta_catch_em_all.fragments.TripFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <TextView
+        android:paddingTop="100sp"
+        android:textSize="45sp"
+        android:typeface="sans"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Gotta catch'em all!" />
 
 </FrameLayout>

@@ -14,6 +14,8 @@ import uk.co.alt236.bluetoothlelib.device.beacon.BeaconUtils;
 public class BeaconsInfo {
 
     public static boolean FORCE_STOP_SCAN = false;
+    public static int SCANTIME = 60; //how much seconds scanner should seek for beacons
+    public static boolean NEW_FIGHT; //prevent to start 2 or more fights at the same time
 
     public interface MAC {
         String Primeape = "F2:8E:23:A3:17:E6";

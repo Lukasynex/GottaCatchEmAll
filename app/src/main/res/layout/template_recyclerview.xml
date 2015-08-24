@@ -18,23 +18,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="300sp"/>
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/recycler_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="300sp"/>-->
 
+    <TextView
+        android:background="#ff8afff5"
+        android:id="@+id/timeLeftDescription"
+        android:textSize="40sp"
+        android:text="Scan for pokemons"
+        android:paddingTop="40sp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_below="@+id/timeLeftDescription"
+        android:id="@+id/timeLeft"
+        android:textSize="40sp"
+        android:text="60"
+        android:paddingTop="40sp"
+        android:paddingBottom="140sp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <com.tt.whorlviewlibrary.WhorlView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/whorl2"
-        android:padding="15sp"
+        android:paddingTop="15sp"
         android:layout_width="1dp"
         android:layout_height="1dp"
-        app:whorlview_circle_colors="#F14336_#ffffff_#5677fc_#F44336_#4CAF50"
+        app:whorlview_circle_colors="#F14336_#c0392b_#2980b9_#f39c12_#16a085"
         app:whorlview_circle_speed="270"
         app:whorlview_parallax="fast"
         app:whorlview_strokeWidth="6"
         app:whorlview_sweepAngle="90"
-        android:layout_below="@+id/recycler_view"
+        android:layout_below="@+id/timeLeft"
         android:layout_centerHorizontal="true">
     </com.tt.whorlviewlibrary.WhorlView>
 

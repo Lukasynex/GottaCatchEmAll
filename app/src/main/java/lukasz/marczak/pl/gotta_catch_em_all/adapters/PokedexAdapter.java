@@ -101,13 +101,12 @@ public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter
 
     }
 
-    private static boolean bindingRunning = false;
     public static boolean downloadDone = false;
 
     @Override
     public void onBindViewHolder(final ViewHolder vh, final int position) {
         Log.d(TAG, "onBindViewHolder");
-        if (bindingRunning || dataset == null || dataset.size() <= position
+        if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null)
             return;
         if ( position != 149 && dataset.get(position).getName().equals("")) {
@@ -120,12 +119,7 @@ public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter
 
         vh.id.setText(String.valueOf(1 + position));
         String name = dataset.get(position).getName();
-//        if (name.length() == 0)
-//            downloadDone = false;
-
         vh.name.setText(name);
-
-
     }
 
     @Override

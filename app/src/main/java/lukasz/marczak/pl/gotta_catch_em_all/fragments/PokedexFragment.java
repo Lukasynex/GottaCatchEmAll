@@ -41,34 +41,19 @@ public class PokedexFragment extends Fragment {
     List<NetPoke> dataset;
     RecyclerView recyclerView;
     WhorlView progressBar;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-//    private OnFragmentInteractionListener mListener;
 
     public static PokedexFragment newInstance() {
         PokedexFragment fragment = new PokedexFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
     public PokedexFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-
     }
 
     @Override
@@ -96,7 +81,6 @@ public class PokedexFragment extends Fragment {
         setupRxQuerying(pokedexAdapter);
 
         return view;
-
     }
 
     @Override
@@ -105,12 +89,8 @@ public class PokedexFragment extends Fragment {
         Log.d(TAG, "onViewCreated()");
     }
 
-    private boolean isRunningGETs = false;
-
     private void downloadMorePokes(int position, PokedexAdapter adapter) {
         Log.d(TAG, "downloadMorePokes()");
-        if (isRunningGETs)
-            return;
         PokedexService service = new SimpleRestAdapter(PokedexService.POKEDEX_NAME_ENDPOINT,
                 new TypeToken<String>() {
                 }.getType(), new PokeNetNameDeserializer()).getPokedexService();
@@ -122,7 +102,7 @@ public class PokedexFragment extends Fragment {
 
         Log.d(TAG, "downloading items: (" + position + ", " + maxSize + ")");
 
-        for (int j = position ; j < maxSize; j++) {
+        for (int j = position; j < maxSize; j++) {
             rx.Observable<Response> newPokemon = service.getPokemonNameByID(j + 1)
                     .onErrorResumeNext(Observable.<Response>empty());
             observables.add(newPokemon);
@@ -157,7 +137,6 @@ public class PokedexFragment extends Fragment {
                         adapter.notifyDataset();
                         dismissProgressBar();
                         adapter.unLockTouchEvents();
-                        isRunningGETs = false;
                         PokedexAdapter.downloadDone = true;
                     }
                 });
@@ -175,7 +154,6 @@ public class PokedexFragment extends Fragment {
                         adapter.notifyDataset();
                         dismissProgressBar();
                         adapter.unLockTouchEvents();
-                        isRunningGETs = false;
                     }
                 });
             }
@@ -228,7 +206,8 @@ public class PokedexFragment extends Fragment {
 
     public void showProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
-        progressBar.start();
+        if (!progressBar.isCircling())
+            progressBar.start();
         recyclerView.setVisibility(View.GONE);
     }
 
