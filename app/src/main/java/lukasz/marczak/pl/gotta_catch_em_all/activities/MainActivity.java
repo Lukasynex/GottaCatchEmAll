@@ -17,7 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
@@ -41,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
+    private RelativeLayout progressBarLayout;
+    private FrameLayout main;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] headers;
@@ -56,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         headers = Config.HEADERS;//getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        progressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
+        main = (FrameLayout) findViewById(R.id.content_frame);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -106,7 +111,9 @@ public class MainActivity extends AppCompatActivity {
     private rx.Subscription downloadSubscription;
 
     public void showProgressBar(boolean show) {
-
+        Log.d(TAG, "showProgressBar " + show);
+//        progressBarLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+//        main.setVisibility(!show ? View.VISIBLE : View.GONE);
     }
 
     private void downloadPokedex() {

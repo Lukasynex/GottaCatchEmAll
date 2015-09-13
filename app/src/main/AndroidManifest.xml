@@ -33,6 +33,9 @@
         <activity
             android:name=".activities.BundlerActivity"
             android:label="@string/title_activity_bundler"/>
+        <activity
+            android:name=".activities.PokeInfoActivity"
+            android:label="@string/title_activity_pokemon_info"/>
     </application>
 
 </manifest>

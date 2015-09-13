@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
+import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
 import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
 import retrofit.client.Response;
@@ -35,15 +36,15 @@ public class DownloadPokedex {
 
     private long startMillis = 0;
 
-    public void start(final Context context) {
+    public void start(final MainActivity context) {
         Log.d(TAG, "start ");
-
-        Realm.getInstance(context).beginTransaction();
-        while (Realm.getInstance(context).allObjects(RealmPoke.class).size() > 0) {
-            Log.d(TAG, "removing item ");
-            Realm.getInstance(context).allObjects(RealmPoke.class).removeLast();
-        }
-        Realm.getInstance(context).commitTransaction();
+//
+//        Realm.getInstance(context).beginTransaction();
+//        while (Realm.getInstance(context).allObjects(RealmPoke.class).size() > 0) {
+//            Log.d(TAG, "removing item ");
+//            Realm.getInstance(context).allObjects(RealmPoke.class).removeLast();
+//        }
+//        Realm.getInstance(context).commitTransaction();
 
 
         startMillis = System.currentTimeMillis();
@@ -55,8 +56,8 @@ public class DownloadPokedex {
 
 
         List<Integer> all_150 = new LinkedList<>();
-        for (int j = 0; j < 150; j++) {
-            all_150.add(j + 1);
+        for (int j = 1; j < 152; j++) {
+            all_150.add(j);
         }
 
         Observable.from(all_150).flatMap(new Func1<Integer, Observable<String>>() {
@@ -79,7 +80,7 @@ public class DownloadPokedex {
                 realm.beginTransaction();
                 RealmPoke poke = realm.createObject(RealmPoke.class); // Create a new object
                 poke.setName(netPoke.getName());
-                poke.setId(String.valueOf(netPoke.getID()));
+                poke.setId(String.valueOf(netPoke.getID()-1));
                 realm.commitTransaction();
 
                 return poke;
@@ -95,7 +96,14 @@ public class DownloadPokedex {
         }).subscribe(new Subscriber<RealmPoke>() {
             @Override
             public void onCompleted() {
+
                 Log.d(TAG, "onCompleted in " + (System.currentTimeMillis() - startMillis));
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        context.showProgressBar(false);
+                    }
+                });
             }
 
             @Override

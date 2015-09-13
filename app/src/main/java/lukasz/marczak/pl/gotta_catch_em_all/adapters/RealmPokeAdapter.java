@@ -1,6 +1,7 @@
 package lukasz.marczak.pl.gotta_catch_em_all.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -18,6 +19,9 @@ import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
+import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
 import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
@@ -53,7 +57,8 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         List<RealmPoke> pokesUnSorted = Realm.getInstance(parent.getActivity()).where(RealmPoke.class)
                 .findAll();
         for (RealmPoke poke : pokesUnSorted) {
-            dataset.add(new NetPoke(Integer.valueOf(poke.getId()), poke.getName()));
+//            if (!contains(dataset, poke))
+                dataset.add(new NetPoke(Integer.valueOf(poke.getId()), poke.getName()));
         }
         Collections.sort(dataset, new Comparator<NetPoke>() {
             @Override
@@ -61,7 +66,17 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
                 return lhs.getID() < rhs.getID() ? -1 : 1;
             }
         });
+        dataset = dataset.subList(1,dataset.size());
 
+    }
+
+    private boolean contains(List<NetPoke> dataset, RealmPoke poke) {
+
+        for (NetPoke netPoke : dataset) {
+            if (netPoke.getName() .equals(poke.getName()))
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -71,25 +86,33 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         View v = android.view.LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.net_poke_item, parent, false);
         ViewHolder vh = new ViewHolder(v);
-        setupClickListeners(vh);
         return vh;
     }
 
-    private void setupClickListeners(final ViewHolder holder) {
-        int position = holder.getAdapterPosition();
-        if (position < 0)
-            return;
-        Log.i(TAG, "clicked item " + position);
-    }
 
     @Override
     public void onBindViewHolder(final ViewHolder vh, final int position) {
         Log.d(TAG, "onBindViewHolder");
         if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null) return;
+
         NetPoke poke = dataset.get(position);
         vh.id.setText(String.valueOf(poke.getID()));
         vh.name.setText(poke.getName());
+        vh.dataParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick " + position);
+                if (position < 0)
+                    return;
+                NetPoke poke = dataset.get(position);
+                Log.i(TAG, "clicked item " + position);
+                Intent intent = new Intent(context, PokeInfoActivity.class);
+                intent.putExtra(PokeConstants.ID, poke.getID());
+                intent.putExtra(PokeConstants.NAME, poke.getName());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
