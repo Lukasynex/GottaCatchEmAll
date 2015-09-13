@@ -13,6 +13,7 @@ import java.util.List;
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
 import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
 import retrofit.client.Response;
@@ -59,7 +60,6 @@ public class DownloadPokedex {
         for (int j = 1; j < 152; j++) {
             all_150.add(j);
         }
-
         Observable.from(all_150).flatMap(new Func1<Integer, Observable<String>>() {
             @Override
             public Observable<String> call(Integer integer) {
@@ -71,33 +71,28 @@ public class DownloadPokedex {
             public NetPoke call(Integer id, String name) {
                 return new NetPoke(id, name);
             }
-        }).map(new Func1<NetPoke, RealmPoke>() {
+        }).onErrorResumeNext(new Func1<Throwable, Observable<NetPoke>>() {
             @Override
-            public RealmPoke call(NetPoke netPoke) {
-                Log.d(TAG, "call ");
-                Realm realm = Realm.getInstance(context);
-
-                realm.beginTransaction();
-                RealmPoke poke = realm.createObject(RealmPoke.class); // Create a new object
-                poke.setName(netPoke.getName());
-                poke.setId(String.valueOf(netPoke.getID()-1));
-                realm.commitTransaction();
-
-                return poke;
-            }
-        }).onErrorResumeNext(new Func1<Throwable, Observable<RealmPoke>>() {
-            @Override
-            public Observable<RealmPoke> call(Throwable throwable) {
+            public Observable<NetPoke> call(Throwable throwable) {
                 Log.d(TAG, "call empty realmPoke");
                 Log.d(TAG, throwable.getMessage());
                 Log.d(TAG, throwable.getCause().toString());
                 return Observable.empty();
             }
-        }).subscribe(new Subscriber<RealmPoke>() {
+        }).subscribe(new Subscriber<NetPoke>() {
             @Override
             public void onCompleted() {
-
                 Log.d(TAG, "onCompleted in " + (System.currentTimeMillis() - startMillis));
+                Realm realm = Realm.getInstance(context);
+                realm.beginTransaction();
+
+                for (NetPoke netPoke : PokeUtils.netPokes) {
+                    RealmPoke poke = realm.createObject(RealmPoke.class); // Create a new object
+                    poke.setName(netPoke.getName());
+                    poke.setId(String.valueOf(netPoke.getID() - 1));
+                }
+                realm.commitTransaction();
+//                        realm.close();
                 context.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -114,8 +109,9 @@ public class DownloadPokedex {
             }
 
             @Override
-            public void onNext(RealmPoke realmPoke) {
-                Log.d(TAG, "onNext " + realmPoke.getId());
+            public void onNext(NetPoke realPoke) {
+                Log.d(TAG, "onNext " + realPoke.getID());
+                PokeUtils.netPokes.add(realPoke);
             }
         });
     }

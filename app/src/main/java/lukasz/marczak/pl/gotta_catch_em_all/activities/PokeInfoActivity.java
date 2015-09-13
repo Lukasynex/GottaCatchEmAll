@@ -51,8 +51,8 @@ public class PokeInfoActivity extends AppCompatActivity {
             if (p_name.length() == 0)
                 p_name = "pikachu";
 
-            name.setText(p_name);
-            id.setText("#" + p_id);
+            name.setText("");
+            id.setText("");
 
             String url = PokeSpritesManager.getMainPokeByName(PokeUtils.getPokemonNameFromId(this, p_id));
             Picasso.with(this).load(url).into(image);
@@ -88,7 +88,7 @@ public class PokeInfoActivity extends AppCompatActivity {
                     public void run() {
                         description.setText(pokeDetail.toString());
                         name.setText(pokeDetail.getName());
-//                        id.setText(pokeDetail.getId());
+                        id.setText("#" + pokeDetail.getId());
                     }
                 });
             }

@@ -21,8 +21,10 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.DownloadPokedex;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         boolean isFirstLaunch = AppFirstLauncher.INSTANCE.ifAppFirstLaunched(this);
-
+        Log.i(TAG, "isFirstLaunch : " + isFirstLaunch);
         if (isFirstLaunch) {
             AppFirstLauncher.INSTANCE.setup(this);
             downloadPokedex();
@@ -187,6 +189,13 @@ public class MainActivity extends AppCompatActivity {
 //        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
 //        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop ");
+
     }
 
     @Override

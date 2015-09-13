@@ -21,22 +21,14 @@ public class AppFirstLauncher {
     public void setup(Context context) {
         Log.d(TAG, "setup ");
         SharedPreferences.Editor editor = context.getSharedPreferences(IF_APP_FIRST_LAUNCHED, Context.MODE_PRIVATE).edit();
-        String isAppFirstLaunched = new Gson().toJson(Boolean.FALSE); //false means app is not launched first
-        editor.putString(IF_APP_FIRST_LAUNCHED, isAppFirstLaunched);
-        editor.apply(); /**difference is here: editor.commit() was previous.
+        editor.putBoolean(IF_APP_FIRST_LAUNCHED, Boolean.FALSE);
+        editor.commit(); /**difference is here: editor.commit() was previous.
          people say apply() is faster than commit(). because apply is asynchronus */
     }
 
     public boolean ifAppFirstLaunched(Context context) {
         Log.d(TAG, "ifAppFirstLaunched ");
-        String isAppFirstLaunchedJSONed = context.getSharedPreferences(IF_APP_FIRST_LAUNCHED, Context.MODE_PRIVATE)
-                .getString(IF_APP_FIRST_LAUNCHED, null);
-        Type type = new TypeToken<Boolean>() {
-        }.getType();
-        if (isAppFirstLaunchedJSONed == null) {
-            Log.e(TAG, "app is first launched");
-            return true;
-        } else return new Gson().fromJson(isAppFirstLaunchedJSONed, type);
+        return context.getSharedPreferences(IF_APP_FIRST_LAUNCHED, Context.MODE_PRIVATE)
+                .getBoolean(IF_APP_FIRST_LAUNCHED, true);
     }
-
 }

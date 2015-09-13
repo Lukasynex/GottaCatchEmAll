@@ -3,6 +3,7 @@ package lukasz.marczak.pl.gotta_catch_em_all.configuration;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -15,6 +16,10 @@ import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
  */
 public final class PokeUtils {
     public static final String TAG = PokeUtils.class.getSimpleName();
+
+
+    public static List<NetPoke> netPokes = new ArrayList<>();
+
 
     public static String getPokeResByID(int ID) {
         if (ID < 1 || ID > 150)
@@ -40,4 +45,5 @@ public final class PokeUtils {
         }
         return "pikachu";
     }
+
 }

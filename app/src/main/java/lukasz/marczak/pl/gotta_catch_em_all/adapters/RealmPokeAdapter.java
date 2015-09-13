@@ -56,6 +56,7 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         this.parent = parent;
         List<RealmPoke> pokesUnSorted = Realm.getInstance(parent.getActivity()).where(RealmPoke.class)
                 .findAll();
+        dataset.clear();
         for (RealmPoke poke : pokesUnSorted) {
 //            if (!contains(dataset, poke))
                 dataset.add(new NetPoke(Integer.valueOf(poke.getId()), poke.getName()));
