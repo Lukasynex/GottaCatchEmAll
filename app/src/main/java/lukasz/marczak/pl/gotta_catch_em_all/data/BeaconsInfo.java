@@ -30,6 +30,8 @@ public class BeaconsInfo {
         int UNKNOWN_POKEMON_RESOURCE = R.drawable.unknown;
         int MAX_HEALTH = 102;
         int SUM_POWERS = 102;
+        String POKEMON_NAME = "POKEMON_NAME";
+        String POKEMON_ID = "POKEMON_ID";
     }
 
     private static List<Pokemon> pokemons = new ArrayList<>();

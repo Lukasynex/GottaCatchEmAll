@@ -17,14 +17,14 @@ import java.util.List;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.PokedexFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
  */
 public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter.ViewHolder> {
     public static final String TAG = PokedexAdapter.class.getSimpleName();
-    private List<NetPoke> dataset = Collections.synchronizedList(new ArrayList<NetPoke>());
+    private static List<NetPoke> dataset = Collections.synchronizedList(new ArrayList<NetPoke>());
     private Context context = null;
     private PokedexFragment parent;
     private WhorlView progressBar;
@@ -69,7 +69,7 @@ public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter
         }
     }
 
-    public PokedexAdapter(PokedexFragment parent, List<NetPoke> pokes, RecyclerView recycler) {
+    public PokedexAdapter(PokedexFragment parent, List<NetPoke> pokes, final RecyclerView recycler) {
         this.context = parent.getActivity();
         this.parent = parent;
         this.thisRecyclerView = recycler;
@@ -77,10 +77,7 @@ public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter
         thisRecyclerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (allowTouchEvents)
-                    return false;
-                else
-                    return true;
+                return !allowTouchEvents;
             }
         });
     }
@@ -109,7 +106,12 @@ public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter
         if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null)
             return;
-        if ( position != 149 && dataset.get(position).getName().equals("")) {
+        if (position == 0) {
+            vh.id.setText("150 pokemons here");
+            vh.name.setText("!!!");
+            return;
+        }
+        if (position != 149 && dataset.get(position).getName().equals("")) {
             Log.d(TAG, "new items!!!");
             allowTouchEvents = false;
 

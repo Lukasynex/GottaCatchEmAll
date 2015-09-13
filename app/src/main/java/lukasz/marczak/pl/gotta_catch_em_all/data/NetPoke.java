@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 public class NetPoke {
 
     private int ID;
+
     private String name;
 //    private Bitmap
 

@@ -21,9 +21,18 @@ import android.widget.ListView;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.PokedexFragment;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.RangeFragment;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.TripFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.DownloadPokedex;
+import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RangeFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.TripFragment;
+import rx.Observable;
+import rx.Observer;
+import rx.android.app.AppObservable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] headers;
+    public static boolean firstLaunch = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +94,64 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             selectItem(0);
         }
+
+        boolean isFirstLaunch = AppFirstLauncher.INSTANCE.ifAppFirstLaunched(this);
+
+        if (isFirstLaunch) {
+            AppFirstLauncher.INSTANCE.setup(this);
+            downloadPokedex();
+        }
+    }
+
+    private rx.Subscription downloadSubscription;
+
+    public void showProgressBar(boolean show) {
+
+    }
+
+    private void downloadPokedex() {
+        Log.d(TAG, "download Pokedex ");
+        showProgressBar(true);
+        downloadSubscription = AppObservable.
+                bindActivity(this, _getDownloadPokedexObservable())
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(_getDummyObserver());
+    }
+
+    private Observable<Boolean> _getDownloadPokedexObservable() {
+        return Observable.just(true).map(new Func1<Boolean, Boolean>() {
+            @Override
+            public Boolean call(Boolean aBoolean) {
+                Log.d(TAG, "Downloading data for draggable list in thread");
+                DownloadPokedex.INSTANCE.start(MainActivity.this);
+                return aBoolean;
+            }
+        });
+    }
+
+    private Observer<Boolean> _getDummyObserver() {
+        return new Observer<Boolean>() {
+
+            @Override
+            public void onCompleted() {
+                Log.d(TAG, "onCompleted download stopnearby");
+                if (downloadSubscription != null && !downloadSubscription.isUnsubscribed())
+                    downloadSubscription.unsubscribe();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "onError ");
+                Log.e(TAG, "cause " + e.getCause());
+                Log.e(TAG, "message " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Boolean bool) {
+                Log.d(TAG, "onNext download stopnearby " + bool);
+            }
+        };
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -154,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.fab_in,R.anim.fab_out,R.anim.fab_in,R.anim.fab_out)
+                .setCustomAnimations(R.anim.fab_in, R.anim.fab_out, R.anim.fab_in, R.anim.fab_out)
                 .replace(R.id.content_frame, fragment)
                 .commit();
 
@@ -178,6 +246,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "switchToFragment - POKEDEX");
                 fragment = PokedexFragment.newInstance();
                 break;
+            case Config.FRAGMENT.ALL_POKEMONS:
+                Log.v(TAG, "switchToFragment - POKEDEX");
+                fragment = RealmPokeFragment.newInstance();
+                break;
+
 
 //            case Config.FRAGMENT_SETTINGS:
 //                Log.v(TAG, "switchToFragment - settings");

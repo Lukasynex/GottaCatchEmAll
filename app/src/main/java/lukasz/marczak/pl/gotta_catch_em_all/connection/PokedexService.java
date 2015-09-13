@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 
 import javax.security.auth.callback.Callback;
 
+import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
 import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
@@ -25,7 +26,13 @@ public interface PokedexService {
     @GET("/{id}")
     rx.Observable<Response> getPokemonNameByID(@Path("id") Integer id);
 
+    @GET("/{id}")
+    rx.Observable<String> getPokemonByID(@Path("id") Integer id);
+
 
     @GET("/{id}")
     rx.Observable<String> getPokemonName(@Path("id") Integer id);
+
+
+
 }

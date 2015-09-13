@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="lukasz.marczak.pl.gotta_catch_em_all" >
+    package="lukasz.marczak.pl.gotta_catch_em_all">
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -14,10 +14,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
-            android:name="lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity"
-            android:label="@string/app_name" >
+            android:name=".activities.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,9 +25,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity"
-            android:label="@string/title_activity_fight" >
-        </activity>
+            android:name=".activities.FightActivity"
+            android:label="@string/title_activity_fight" />
+        <activity
+            android:name=".activities.SecondActivity"
+            android:label="@string/title_activity_second" />
+        <activity
+            android:name=".activities.BundlerActivity"
+            android:label="@string/title_activity_bundler"/>
     </application>
 
 </manifest>

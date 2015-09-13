@@ -1,4 +1,4 @@
-package lukasz.marczak.pl.gotta_catch_em_all.fragments;
+package lukasz.marczak.pl.gotta_catch_em_all.fragments.main;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -116,7 +116,7 @@ public class PokedexFragment extends Fragment {
 
         PokedexService service = new SimpleRestAdapter(
                 PokedexService.POKEDEX_NAME_ENDPOINT, Response.class,
-                new PokeNetNameDeserializer()).getPokedexService();
+                PokeNetNameDeserializer.INSTANCE).getPokedexService();
 
         for (int j = 0; j < 20; j++) {
             rx.Observable<Response> newPokemon = service.getPokemonNameByID(j + 1)

@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="lukasz.marczak.pl.gotta_catch_em_all.fragments.fight.FightRunningFragment">
+
+
+    <ImageView
+        android:id="@+id/opponent_front"
+        android:background="#ffffffff"
+        android:layout_height="150sp"
+        android:layout_width="150sp"
+        android:layout_above="@+id/your_pokemon_back"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="89dp" />
+    <ImageView
+        android:id="@+id/action"
+        android:background="#ffffffff"
+        android:layout_height="100sp"
+        android:layout_width="100sp"
+        android:layout_above="@+id/your_pokemon_back"
+        android:layout_centerHorizontal="true" />
+    <ImageView
+        android:id="@+id/your_pokemon_back"
+        android:background="#93c8ff"
+        android:layout_height="150sp"
+        android:layout_width="150sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="179dp" />
+
+</RelativeLayout>

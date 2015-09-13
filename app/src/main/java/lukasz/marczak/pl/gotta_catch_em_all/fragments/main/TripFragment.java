@@ -1,4 +1,4 @@
-package lukasz.marczak.pl.gotta_catch_em_all.fragments;
+package lukasz.marczak.pl.gotta_catch_em_all.fragments.main;
 
 import android.app.Activity;
 import android.os.Bundle;
