@@ -57,10 +57,10 @@ public class FightRunningFragment extends Fragment {
         TextView select = (TextView) view.findViewById(R.id.select_pokemon);
         TextView run = (TextView) view.findViewById(R.id.run);
 
-        fight.setOnTouchListener(getTouchListener(0,fight));
-        bag.setOnTouchListener(getTouchListener(1,bag));
-        select.setOnTouchListener(getTouchListener(2,select));
-        run.setOnTouchListener(getTouchListener(3,run));
+        fight.setOnTouchListener(getTouchListener(0, fight));
+        bag.setOnTouchListener(getTouchListener(1, bag));
+        select.setOnTouchListener(getTouchListener(2, select));
+        run.setOnTouchListener(getTouchListener(3, run));
 
         RelativeLayout includedOpponentBar = (RelativeLayout) view.findViewById(R.id.opponent_front_status);
         RelativeLayout yourPokemonBar = (RelativeLayout) view.findViewById(R.id.your_pokemon_back_status);
@@ -101,16 +101,18 @@ public class FightRunningFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(TAG, "onTouch : mode " + mode);
                 switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        view.setBackgroundColor(Color.LTGRAY);
-                        break;
-                    }
                     case MotionEvent.ACTION_UP: {
+                        Log.d(TAG, "action up");
                         view.setBackgroundColor(Color.WHITE);
                         break;
                     }
+                    case MotionEvent.ACTION_DOWN: {
+                        Log.d(TAG, "action down");
+                        view.setBackgroundColor(Color.LTGRAY);
+                        break;
+                    }
                 }
-                return false;
+                return true;
             }
         };
     }
