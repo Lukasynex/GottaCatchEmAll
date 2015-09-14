@@ -29,6 +29,7 @@ public class FightRunningFragment extends Fragment {
     ImageView yourPokemon, opponentPokemon;
     FightActivity parentActivity;
     String opponentName = "";
+    boolean strongPokemon = true;
 
     public static FightRunningFragment newInstance(String opponent) {
         FightRunningFragment fragment = new FightRunningFragment();
@@ -99,7 +100,7 @@ public class FightRunningFragment extends Fragment {
         return new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "onTouch : mode " + mode);
+                Log.d(TAG, "onTouch");
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_UP: {
                         Log.d(TAG, "action up");
@@ -109,9 +110,19 @@ public class FightRunningFragment extends Fragment {
                     case MotionEvent.ACTION_DOWN: {
                         Log.d(TAG, "action down");
                         view.setBackgroundColor(Color.LTGRAY);
+                        switch (mode) {
+                            case 3: {
+                                if (strongPokemon)
+                                    parentActivity.onBackPressed();
+                                break;
+                            }
+                            default:
+                                Log.d(TAG, "mode " + mode);
+                        }
                         break;
                     }
                 }
+
                 return true;
             }
         };
