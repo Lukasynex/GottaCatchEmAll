@@ -88,8 +88,4 @@ public class Pokemon {
             return new Pokemon(this);
         }
     }
-
-    public int getImageResource() {
-        return imageResource;
-    }
 }

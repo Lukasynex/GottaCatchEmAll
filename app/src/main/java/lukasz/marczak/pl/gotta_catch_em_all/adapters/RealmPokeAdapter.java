@@ -110,7 +110,6 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
                 Log.i(TAG, "clicked item " + position);
                 Intent intent = new Intent(context, PokeInfoActivity.class);
                 intent.putExtra(PokeConstants.ID, poke.getID());
-                intent.putExtra(PokeConstants.NAME, poke.getName());
                 context.startActivity(intent);
             }
         });

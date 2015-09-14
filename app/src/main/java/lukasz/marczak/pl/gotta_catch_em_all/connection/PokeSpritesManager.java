@@ -6,16 +6,21 @@ package lukasz.marczak.pl.gotta_catch_em_all.connection;
 public class PokeSpritesManager {
 
     public static String getMainPokeByName(String pokemonName) {
-        if(pokemonName.isEmpty())
-            pokemonName="pikachu";
-        return "http://img.pokemondb.net/artwork/" + pokemonName + ".jpg";
+        return "http://img.pokemondb.net/artwork/" + preparedName(pokemonName) + ".jpg";
+    }
+
+    public static String preparedName(String pokemonName) {
+        if (pokemonName == null || pokemonName.length() == 0)
+            pokemonName = "pikachu";
+        return pokemonName.toLowerCase();
     }
 
     public static String getPokemonBackByName(String pokomonName) {
-        return "http://img.pokemondb.net/sprites/heartgold-soulsilver/back-normal/" + pokomonName + ".png";
+        return "http://img.pokemondb.net/sprites/heartgold-soulsilver/back-normal/" + preparedName(pokomonName) + ".png";
     }
+
     public static String getPokemonFrontByName(String pokomonName) {
-        return "http://img.pokemondb.net/sprites/heartgold-soulsilver/normal/" + pokomonName + ".png";
+        return "http://img.pokemondb.net/sprites/heartgold-soulsilver/normal/" + preparedName(pokomonName) + ".png";
     }
 
 }

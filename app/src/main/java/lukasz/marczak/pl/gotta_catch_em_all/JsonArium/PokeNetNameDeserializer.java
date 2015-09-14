@@ -17,6 +17,7 @@ public class PokeNetNameDeserializer implements JsonDeserializer<String> {
 
     public static final String TAG = PokeNetNameDeserializer.class.getSimpleName();
     public static JsonDeserializer INSTANCE = new PokeNetNameDeserializer();
+    private PokeNetNameDeserializer(){}
 
     @Override
     public String deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

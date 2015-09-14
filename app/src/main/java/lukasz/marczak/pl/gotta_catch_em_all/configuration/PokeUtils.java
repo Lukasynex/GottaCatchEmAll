@@ -46,4 +46,7 @@ public final class PokeUtils {
         return "pikachu";
     }
 
+    public static String getPrettyPokemonName(String pokemonName) {
+        return pokemonName.substring(0, 1).toUpperCase() + pokemonName.substring(1);
+    }
 }

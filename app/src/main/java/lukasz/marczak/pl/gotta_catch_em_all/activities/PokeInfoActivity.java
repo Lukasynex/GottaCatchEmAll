@@ -47,9 +47,6 @@ public class PokeInfoActivity extends AppCompatActivity {
         Intent data = getIntent();
         if (data != null) {
             int p_id = data.getIntExtra(PokeConstants.ID, 26);
-            String p_name = data.getStringExtra(PokeConstants.NAME);
-            if (p_name.length() == 0)
-                p_name = "pikachu";
 
             name.setText("");
             id.setText("");

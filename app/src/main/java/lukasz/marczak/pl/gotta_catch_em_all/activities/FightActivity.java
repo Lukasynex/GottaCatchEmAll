@@ -35,9 +35,9 @@ public class FightActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_fight);
 
-     //   onStartFightActivity(getIntent());
+        //   onStartFightActivity(getIntent());
 
-        switchToFragment(Config.FRAGMENT.START_FIGHT);
+        switchToFragment(Config.FRAGMENT.START_FIGHT,null);
     }
 
     @Override
@@ -82,22 +82,27 @@ public class FightActivity extends AppCompatActivity {
         }
     }
 
-    public void switchToFragment(int fragmentId) {
+    public void switchToFragment(int fragmentId,String opponentName) {
         Fragment fragment;
+        int[] animRes;
         switch (fragmentId) {
             case Config.FRAGMENT.START_FIGHT:
                 fragment = StartFightFragment.newInstance(
                         PokeUtils.getRandomPokemonID());
+                animRes = new int[]{R.anim.fab_in, R.anim.fab_out};
                 break;
             case Config.FRAGMENT.RUNNING_FIGHT:
-                fragment = FightRunningFragment.newInstance();
+                fragment = FightRunningFragment.newInstance(opponentName);
+                animRes = new int[]{R.anim.abc_grow_fade_in_from_bottom, R.anim.abc_shrink_fade_out_from_bottom};
                 break;
             default:
                 fragment = StartFightFragment.newInstance(PokeUtils.getRandomPokemonID());
+                animRes = new int[]{R.anim.fab_in, R.anim.fab_out};
         }
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.fab_in, R.anim.fab_out, R.anim.fab_in, R.anim.fab_out)
+                .setCustomAnimations(animRes[0], animRes[1], animRes[0], animRes[1])
                 .replace(R.id.content_frame, fragment)
                 .commit();
     }
@@ -123,25 +128,9 @@ public class FightActivity extends AppCompatActivity {
                 .load(PokeUtils.getPokeResByID(randomPokemonID))
                 .into(wildPokemon);
         wildPokemon.setVisibility(View.VISIBLE);
-        startFight();
+
     }
 
-    private void startFight() {
-        Log.d(TAG, "startFight()");
-        handler.postDelayed(fightBody(), 5000); //delay of 5 seconds
-    }
-
-    private Runnable fightBody() {
-        Log.d(TAG, "fight Body()");
-        return new Runnable() {
-            @Override
-            public void run() {
-                wildPokemon.setVisibility(View.GONE);
-                title.setText("Fight started!!!");
-
-            }
-        };
-    }
 
     @Override
     public void onBackPressed() {
