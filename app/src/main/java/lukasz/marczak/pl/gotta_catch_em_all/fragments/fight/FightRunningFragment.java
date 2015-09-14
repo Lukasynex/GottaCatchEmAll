@@ -104,7 +104,7 @@ public class FightRunningFragment extends Fragment {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_UP: {
                         Log.d(TAG, "action up");
-                        view.setBackgroundColor(Color.WHITE);
+                        view.setBackgroundColor(Color.TRANSPARENT);
                         break;
                     }
                     case MotionEvent.ACTION_DOWN: {
@@ -122,7 +122,6 @@ public class FightRunningFragment extends Fragment {
                         break;
                     }
                 }
-
                 return true;
             }
         };

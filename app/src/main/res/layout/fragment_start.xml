@@ -21,12 +21,6 @@
         android:layout_width="300sp"
         android:layout_height="300sp"
         android:src="@drawable/unknown"/>
-    <TextView
-        android:layout_below="@+id/wild_pokemon"
-        android:id="@+id/pokemonName"
-        android:textSize="30sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="" />
+
 
 </RelativeLayout>

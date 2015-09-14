@@ -32,7 +32,6 @@ import rx.Subscriber;
 public class StartFightFragment extends Fragment {
     private static final String TAG = StartFightFragment.class.getSimpleName();
     private ImageView wildPokemon;
-    private TextView pokemonNameTV;
     private TextView title;
     private FightActivity parentActivity;
     private String pokemonName;
@@ -75,20 +74,16 @@ public class StartFightFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_start, container, false);
         wildPokemon = (ImageView) view.findViewById(R.id.wild_pokemon);
 
-
         title = (TextView) view.findViewById(R.id.title);
-        pokemonNameTV = (TextView) view.findViewById(R.id.pokemonName);
         wildPokemon.setVisibility(View.GONE);
         title.setText("Wild " + PokeUtils.getPrettyPokemonName(pokemonName) + " appeared!!!");
         String image = PokeSpritesManager.getMainPokeByName(PokeUtils.getPokemonNameFromId(getActivity(), pokemonID));
-        pokemonNameTV.setText(pokemonName);
         Log.d(TAG, "fetching image: " + image);
         Picasso.with(parentActivity).load(image).into(wildPokemon);
         wildPokemon.setVisibility(View.VISIBLE);
 
         return view;
     }
-
 
     private void startFight() {
         Log.d(TAG, "startFight()");
@@ -105,7 +100,6 @@ public class StartFightFragment extends Fragment {
                 parentActivity.switchToFragment(Config.FRAGMENT.RUNNING_FIGHT, pokemonName);
             }
         };
-
     }
 
     @Override
@@ -124,55 +118,5 @@ public class StartFightFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    public Subscriber<String> getPokeNameSubscriber() {
-        return new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                Log.d(TAG, "onCompleted()");
-
-                handlarzNarkotykow
-                        .post(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      Picasso.with(parentActivity)
-                                              .load(PokeSpritesManager
-                                                      .getMainPokeByName(pokemonName)).into(wildPokemon);
-                                      if (pokemonName.isEmpty())
-                                          pokemonName = "pikachu";
-                                      pokemonNameTV.setText(pokemonName.toUpperCase().substring(0, 1) +
-                                              pokemonName.substring(1));
-
-                                  }
-                              }
-                        );
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "onError()");
-                e.printStackTrace();
-                Picasso.with(parentActivity)
-                        .load(PokeUtils.getPokeResByID(pokemonID)).into(wildPokemon);
-                if (pokemonName.isEmpty())
-                    pokemonName = "pokemon";
-
-                title.setText("Wild " +
-                        pokemonName.toUpperCase().substring(0, 1) +
-                        pokemonName.substring(1) + " appeared!!!");
-
-            }
-
-            @Override
-            public void onNext(String s) {
-                Log.d(TAG, "onNext(" + s + ")");
-
-                if (s.isEmpty())
-                    pokemonName = "bulbasaur";
-                else
-                    pokemonName = s;
-            }
-        };
     }
 }
