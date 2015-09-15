@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Randy;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
@@ -57,6 +58,8 @@ public class FightRunningFragment extends Fragment {
         TextView bag = (TextView) view.findViewById(R.id.bag);
         TextView select = (TextView) view.findViewById(R.id.select_pokemon);
         TextView run = (TextView) view.findViewById(R.id.run);
+        TextView question = (TextView) view.findViewById(R.id.question);
+        question.setText("What will \n " + PokeUtils.getPrettyPokemonName(MainActivity.pokeName) + " do?");
 
         fight.setOnTouchListener(getTouchListener(0, fight));
         bag.setOnTouchListener(getTouchListener(1, bag));
@@ -88,7 +91,7 @@ public class FightRunningFragment extends Fragment {
 //        HPManager.INSTANCE.injectYourPokemonStats(yourPokeEmptyHP, yourPokeFullHP, yourPokeLevel, yourPokeHP);
 
         opponentNameTV.setText(PokeUtils.getPrettyPokemonName(opponentName));
-        yourPokeNameTV.setText("Pikachu");
+        yourPokeNameTV.setText(PokeUtils.getPrettyPokemonName(MainActivity.pokeName));
 
         Picasso.with(getActivity()).load(getOppponentPokemonResource()).into(opponentPokemon);
         Picasso.with(getActivity()).load(getYourPokemonResource()).into(yourPokemon);
@@ -144,7 +147,7 @@ public class FightRunningFragment extends Fragment {
     }
 
     public String getYourPokemonResource() {
-        return PokeSpritesManager.getPokemonBackByName(null);
+        return PokeSpritesManager.getPokemonBackByName(MainActivity.pokeName);
     }
 
     public String getOppponentPokemonResource() {

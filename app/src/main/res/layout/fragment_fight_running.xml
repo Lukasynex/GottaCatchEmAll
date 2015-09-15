@@ -98,7 +98,7 @@
         android:layout_alignTop="@+id/fight"
         android:lines="2"
         android:padding="15sp"
-        android:text="What will \n Pikachu do?"
+        android:text=""
         android:typeface="monospace" />
 
 </RelativeLayout>

@@ -1,13 +1,20 @@
 package lukasz.marczak.pl.gotta_catch_em_all.fragments.main;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,8 +25,15 @@ import lukasz.marczak.pl.gotta_catch_em_all.R;
  */
 public class TripFragment extends Fragment {
 
-    public static TripFragment newInstance() {
+    String pokeName;
+
+    public static TripFragment newInstance(String pokename) {
         TripFragment fragment = new TripFragment();
+        Bundle args = new Bundle();
+        args.putString(PokeConstants.NAME, pokename);
+        fragment.setArguments(args);
+
+
         return fragment;
     }
 
@@ -29,6 +43,9 @@ public class TripFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            pokeName = getArguments().getString(PokeConstants.NAME);
+        }
     }
 
     @Override
@@ -36,6 +53,17 @@ public class TripFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_trip, container, false);
+        ImageView choose = (ImageView) view.findViewById(R.id.choose);
+        FrameLayout parent = (FrameLayout) view.findViewById(R.id.parent);
+        Picasso.with(getActivity()).load(PokeSpritesManager.getMainPokeByName(pokeName)).into(choose);
+
+        if (pokeName.startsWith("b"))
+            parent.setBackgroundColor(Color.parseColor("#6cff6d"));
+        else if (pokeName.startsWith("c"))
+            parent.setBackgroundColor(Color.parseColor("#ffffa148"));
+        else
+            parent.setBackgroundColor(Color.parseColor("#80cbff"));
+
         return view;
     }
 

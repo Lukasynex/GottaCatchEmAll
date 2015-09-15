@@ -23,7 +23,7 @@ public class Config {
         int RUNNING_FIGHT = 8;
     }
 
-    public static FRAGMENT CURRENT_FRAGMENT;
+    public static int CURRENT_FRAGMENT;
 
     public interface IntentCode {
 

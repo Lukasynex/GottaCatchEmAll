@@ -10,4 +10,6 @@
     <string name="title_activity_second">SecondActivity</string>
     <string name="title_activity_bundler">BundlerActivity</string>
     <string name="title_activity_pokemon_info">Pokemon details</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_second_splash">SecondSplashActivity</string>
 </resources>

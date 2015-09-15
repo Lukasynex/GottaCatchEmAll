@@ -25,6 +25,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.adapters.BeaconAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.bluetooth.BLEScanner;
 import lukasz.marczak.pl.gotta_catch_em_all.bluetooth.BluetoothUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
 import lukasz.marczak.pl.gotta_catch_em_all.data.DetectedBeacons;
 import uk.co.alt236.bluetoothlelib.device.BluetoothLeDevice;
@@ -91,9 +92,9 @@ public class RangeFragment extends Fragment {
     };
 
     private void startWildPokemonFight(BluetoothLeDevice deviceLe, IBeaconDevice iBeacon) {
-        if(BeaconsInfo.NEW_FIGHT)
+        if (BeaconsInfo.NEW_FIGHT)
             return;
-        BeaconsInfo.NEW_FIGHT= true;
+        BeaconsInfo.NEW_FIGHT = true;
         whorlView.stop();
         whorlView.setVisibility(View.GONE);
 

@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.DownloadPokedex;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
@@ -51,11 +52,16 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence mTitle;
     private String[] headers;
     public static boolean firstLaunch = true;
+    public static String pokeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent data = getIntent();
+        pokeName = data.getStringExtra(PokeConstants.NAME);
+
 
         mTitle = mDrawerTitle = getTitle();
         headers = Config.HEADERS;//getResources().getStringArray(R.array.planets_array);
@@ -249,10 +255,12 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment getFragmentForPosition(int selectedFragment) {
         Fragment fragment;
+        Config.CURRENT_FRAGMENT = selectedFragment;
         switch (selectedFragment) {
             case Config.FRAGMENT.TRIP:
+
                 Log.v(TAG, "switchToFragment - trip");
-                fragment = TripFragment.newInstance();
+                fragment = TripFragment.newInstance(pokeName);
                 break;
             case Config.FRAGMENT.RANGE:
                 Log.v(TAG, "switchToFragment - range");
@@ -282,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
 //                break;
             default:
                 Log.v(TAG, "switchToFragment - main fragment");
-                fragment = TripFragment.newInstance();
+                fragment = TripFragment.newInstance(pokeName);
                 break;
         }
         return fragment;
@@ -319,5 +327,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "request code: " + requestCode);
         Log.d(TAG, "result code: " + resultCode);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Config.CURRENT_FRAGMENT != 0)
+            selectItem(0);
+        else super.onBackPressed();
     }
 }
