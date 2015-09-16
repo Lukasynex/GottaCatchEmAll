@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void selectItem(int position) {
-
+        Log.d(TAG, "selectItem " + position);
         Fragment fragment = getFragmentForPosition(position);
 
         getSupportFragmentManager()
@@ -274,8 +274,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "switchToFragment - POKEDEX");
                 fragment = RealmPokeFragment.newInstance();
                 break;
-
-
 //            case Config.FRAGMENT_SETTINGS:
 //                Log.v(TAG, "switchToFragment - settings");
 //                fragment = SettingsFragment.newInstance();
@@ -307,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
      * When using the ActionBarDrawerToggle, you must call it during
      * onPostCreate() and onConfigurationChanged()...
      */
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);

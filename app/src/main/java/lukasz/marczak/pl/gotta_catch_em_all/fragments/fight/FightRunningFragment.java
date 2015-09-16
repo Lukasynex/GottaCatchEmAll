@@ -3,6 +3,7 @@ package lukasz.marczak.pl.gotta_catch_em_all.fragments.fight;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import com.squareup.picasso.Picasso;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.adapters.MyPokesAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Randy;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
@@ -30,7 +33,11 @@ public class FightRunningFragment extends Fragment {
     ImageView yourPokemon, opponentPokemon;
     FightActivity parentActivity;
     String opponentName = "";
-    boolean strongPokemon = true;
+    boolean strongPokemon = Randy.randomAnswer();
+    ProgressBar opponentHP;
+    ProgressBar yourPokeHP;
+    TextView yourPokeNameTV;
+    TextView question;
 
     public static FightRunningFragment newInstance(String opponent) {
         FightRunningFragment fragment = new FightRunningFragment();
@@ -58,8 +65,8 @@ public class FightRunningFragment extends Fragment {
         TextView bag = (TextView) view.findViewById(R.id.bag);
         TextView select = (TextView) view.findViewById(R.id.select_pokemon);
         TextView run = (TextView) view.findViewById(R.id.run);
-        TextView question = (TextView) view.findViewById(R.id.question);
-        question.setText("What will \n " + PokeUtils.getPrettyPokemonName(MainActivity.pokeName) + " do?");
+        question = (TextView) view.findViewById(R.id.question);
+        question.setText("What will \n " + PokeUtils.getPrettyPokemonName(MainActivity.pokeName) + "\n do?");
 
         fight.setOnTouchListener(getTouchListener(0, fight));
         bag.setOnTouchListener(getTouchListener(1, bag));
@@ -69,23 +76,20 @@ public class FightRunningFragment extends Fragment {
         RelativeLayout includedOpponentBar = (RelativeLayout) view.findViewById(R.id.opponent_front_status);
         RelativeLayout yourPokemonBar = (RelativeLayout) view.findViewById(R.id.your_pokemon_back_status);
         TextView opponentNameTV = (TextView) includedOpponentBar.findViewById(R.id.pokemon_name);
-        TextView yourPokeNameTV = (TextView) yourPokemonBar.findViewById(R.id.pokemon_name);
+        yourPokeNameTV = (TextView) yourPokemonBar.findViewById(R.id.pokemon_name);
 
         TextView opponentLevel = (TextView) includedOpponentBar.findViewById(R.id.level);
         TextView yourPokeLevel = (TextView) yourPokemonBar.findViewById(R.id.level);
 
         //HP indicators
-        TextView yourPokeEmptyHP = (TextView) yourPokemonBar.findViewById(R.id.hp_empty);
-        TextView yourPokeFullHP = (TextView) yourPokemonBar.findViewById(R.id.hp_full);
+        opponentHP = (ProgressBar) includedOpponentBar.findViewById(R.id.progressBar2);
+        yourPokeHP = (ProgressBar) yourPokemonBar.findViewById(R.id.progressBar2);
 
-        TextView opponentEmptyHP = (TextView) includedOpponentBar.findViewById(R.id.hp_empty);
-        TextView opponentFullHP = (TextView) includedOpponentBar.findViewById(R.id.hp_full);
+        yourPokeHP.setProgress(100);
+        opponentHP.setProgress(75);
 
-        TextView opponentHP = (TextView) includedOpponentBar.findViewById(R.id.pokemon_hp);
-        TextView yourPokeHP = (TextView) yourPokemonBar.findViewById(R.id.pokemon_hp);
-
-        opponentLevel.setText("L : " + Randy.from(10));
-        yourPokeLevel.setText("L : 5");
+        opponentLevel.setText("Level " + Randy.from(10));
+        yourPokeLevel.setText("Level 4");
 
 //        HPManager.INSTANCE.injectOpponentStats(opponentEmptyHP, opponentFullHP, opponentLevel, opponentHP);
 //        HPManager.INSTANCE.injectYourPokemonStats(yourPokeEmptyHP, yourPokeFullHP, yourPokeLevel, yourPokeHP);
@@ -114,9 +118,33 @@ public class FightRunningFragment extends Fragment {
                         Log.d(TAG, "action down");
                         view.setBackgroundColor(Color.LTGRAY);
                         switch (mode) {
+                            case 2: {
+                                new SelectMenuEngine.POKEMON(getActivity()) {
+
+                                    @Override
+                                    public void onPokemonChosen(final int position) {
+                                        Log.d(TAG, "onPokemonChosen ");
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Log.d(TAG, "run ");
+                                                String newPokeName = MyPokesAdapter.dataset.get(position).getName();
+                                                String newPokeResource = PokeSpritesManager
+                                                        .getPokemonBackByName(newPokeName);
+                                                Picasso.with(getActivity()).load(newPokeResource).into(yourPokemon);
+                                                String prettyName = PokeUtils.getPrettyPokemonName(newPokeName);
+                                                yourPokeNameTV.setText(prettyName);
+                                                question.setText("What will \n" + prettyName + " do?");
+                                            }
+                                        });
+                                    }
+                                };
+                                break;
+                            }
                             case 3: {
-                                if (strongPokemon)
-                                    parentActivity.onBackPressed();
+                                if (!strongPokemon) parentActivity.onBackPressed();
+                                else
+                                    Snackbar.make(getView(), "Cannot run this fight!", Snackbar.LENGTH_LONG).show();
                                 break;
                             }
                             default:

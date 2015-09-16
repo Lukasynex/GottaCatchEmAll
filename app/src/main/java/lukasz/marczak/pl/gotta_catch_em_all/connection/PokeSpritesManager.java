@@ -10,7 +10,7 @@ public class PokeSpritesManager {
     }
 
     public static String preparedName(String pokemonName) {
-        if (pokemonName == null || pokemonName.length() == 0)
+        if (pokemonName == null || pokemonName.length() < 3)
             pokemonName = "pikachu";
         return pokemonName.toLowerCase();
     }

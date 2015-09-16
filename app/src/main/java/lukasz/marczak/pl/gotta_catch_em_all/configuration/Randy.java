@@ -4,6 +4,7 @@ import java.util.Random;
 
 /**
  * Created by Lukasz Marczak on 2015-09-14.
+ * Apply randomness to game!!!
  */
 public class Randy {
     public static final Random generator = new Random();
@@ -11,5 +12,9 @@ public class Randy {
     public static int from(int j) {
         return generator.nextInt(j < 0 ? -j : j);
 
+    }
+
+    public static boolean randomAnswer() {
+        return generator.nextBoolean();
     }
 }

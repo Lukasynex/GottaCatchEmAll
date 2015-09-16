@@ -23,27 +23,14 @@
         android:layout_centerHorizontal="true"
         android:text="L: 7" />
 
-    <TextView
-        android:id="@+id/hp_empty"
-        android:layout_width="65sp"
-        android:layout_height="30sp"
-        android:background="#d3d3d3"
-        android:layout_below="@+id/level"
-        android:layout_toEndOf="@+id/level" />
-    <TextView
-        android:layout_toLeftOf="@+id/hp_empty"
-        android:id="@+id/hp_full"
-        android:layout_width="75sp"
-        android:layout_height="30sp"
-        android:layout_below="@+id/level"
-        android:layout_centerHorizontal="true"
-        android:background="#526ef3"/>
+
 
     <TextView
+
         android:id="@+id/pokemon_hp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/hp_empty"
+        android:layout_below="@+id/progressBar2"
         android:layout_centerHorizontal="true"
         android:paddingBottom="5sp"
         android:paddingLeft="15sp"
@@ -57,12 +44,12 @@
         android:layout_below="@+id/pokemon_hp"
         android:layout_centerHorizontal="true"
         android:background="#434343" />
-    <!--<View-->
-        <!--android:layout_marginRight="10dp"-->
-        <!--android:layout_width="1dp"-->
-        <!--android:layout_height="59dp"-->
-        <!--android:layout_above="@+id/bottom_view"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_toLeftOf="@+id/hp_full"-->
-        <!--android:background="#434343" />-->
+
+    <ProgressBar
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="140sp"
+        android:layout_height="25sp"
+        android:id="@+id/progressBar2"
+        android:layout_below="@+id/level"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

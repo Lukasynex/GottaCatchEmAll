@@ -33,6 +33,7 @@
             android:label="@string/title_activity_pokemon_info" />
         <activity
             android:name=".activities.SplashActivity"
+            android:noHistory="true"
             android:label="@string/title_activity_splash" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
