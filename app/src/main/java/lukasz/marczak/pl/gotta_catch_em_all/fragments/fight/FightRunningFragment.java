@@ -120,7 +120,6 @@ public class FightRunningFragment extends Fragment {
                         switch (mode) {
                             case 2: {
                                 new SelectMenuEngine.POKEMON(getActivity()) {
-
                                     @Override
                                     public void onPokemonChosen(final int position) {
                                         Log.d(TAG, "onPokemonChosen ");
