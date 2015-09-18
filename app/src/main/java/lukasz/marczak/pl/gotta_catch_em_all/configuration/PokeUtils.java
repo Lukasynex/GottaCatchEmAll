@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
-import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokedexAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
 
 /**
  * Created by Lukasz Marczak on 2015-08-24.

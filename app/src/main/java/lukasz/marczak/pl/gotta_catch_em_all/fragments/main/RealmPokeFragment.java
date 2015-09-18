@@ -11,28 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.tt.whorlviewlibrary.WhorlView;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
-import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokedexAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.RealmPokeAdapter;
-import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.PokedexService;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
-import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import retrofit.client.Response;
-import retrofit.converter.ConversionException;
-import retrofit.converter.GsonConverter;
-import rx.Observable;
-import rx.Subscriber;
 
 public class RealmPokeFragment extends Fragment {
 

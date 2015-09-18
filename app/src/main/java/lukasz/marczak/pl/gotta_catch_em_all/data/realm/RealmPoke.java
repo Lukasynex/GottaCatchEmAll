@@ -1,4 +1,4 @@
-package lukasz.marczak.pl.gotta_catch_em_all.data;
+package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 
 import io.realm.RealmObject;
 

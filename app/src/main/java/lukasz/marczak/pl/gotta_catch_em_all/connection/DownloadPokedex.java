@@ -1,12 +1,9 @@
 package lukasz.marczak.pl.gotta_catch_em_all.connection;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,8 +12,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
-import retrofit.client.Response;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -50,8 +46,8 @@ public class DownloadPokedex {
 
         startMillis = System.currentTimeMillis();
 
-        final PokedexService service = new SimpleRestAdapter(
-                PokedexService.POKEDEX_NAME_ENDPOINT, new TypeToken<String>() {
+        final PokeApi service = new SimpleRestAdapter(
+                PokeApi.POKEMON_API_ENDPOINT, new TypeToken<String>() {
         }.getType(),
                 PokeNetNameDeserializer.INSTANCE).getPokedexService();
 

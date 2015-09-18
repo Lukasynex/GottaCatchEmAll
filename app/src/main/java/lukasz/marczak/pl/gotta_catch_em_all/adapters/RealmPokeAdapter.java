@@ -4,13 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.tt.whorlviewlibrary.WhorlView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +18,8 @@ import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
 
 /**

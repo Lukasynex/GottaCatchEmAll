@@ -27,6 +27,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.DownloadPokedex;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.TypesDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RangeFragment;
@@ -36,6 +37,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.app.AppObservable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -113,15 +115,23 @@ public class MainActivity extends AppCompatActivity {
         if (isFirstLaunch) {
             AppFirstLauncher.INSTANCE.setup(this);
             downloadPokedex();
+            downloadPokeTypes();
         }
+    }
+
+    private void downloadPokeTypes() {
+        Log.d(TAG, "downloadPokeTypes ");
+        TypesDownloader.INSTANCE.start(this);
     }
 
     private rx.Subscription downloadSubscription;
 
     public void showProgressBar(boolean show) {
         Log.d(TAG, "showProgressBar " + show);
-//        progressBarLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-//        main.setVisibility(!show ? View.VISIBLE : View.GONE);
+        int vis = show ? View.VISIBLE : View.GONE;
+        int inv = !show ? View.VISIBLE : View.GONE;
+        progressBarLayout.setVisibility(vis);
+        main.setVisibility(inv);
     }
 
     private void downloadPokedex() {
@@ -130,6 +140,27 @@ public class MainActivity extends AppCompatActivity {
         downloadSubscription = AppObservable.
                 bindActivity(this, _getDownloadPokedexObservable())
                 .subscribeOn(Schedulers.computation())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showProgressBar(true);
+                            }
+                        });
+                    }
+                }).doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showProgressBar(false);
+                            }
+                        });
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(_getDummyObserver());
     }

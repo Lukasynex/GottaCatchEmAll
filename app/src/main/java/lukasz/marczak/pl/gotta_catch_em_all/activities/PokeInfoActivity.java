@@ -2,13 +2,10 @@ package lukasz.marczak.pl.gotta_catch_em_all.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,13 +18,10 @@ import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.PokedexService;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
-import lukasz.marczak.pl.gotta_catch_em_all.data.Pokemon;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.fight.FightRunningFragment;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.fight.StartFightFragment;
 import rx.Subscriber;
 
 public class PokeInfoActivity extends AppCompatActivity {
@@ -62,10 +56,10 @@ public class PokeInfoActivity extends AppCompatActivity {
 
     private void setupDetails(int _id) {
         Log.d(TAG, "setupDetails ");
-        SimpleRestAdapter adapter = new SimpleRestAdapter(PokedexService.POKEMON_API_ENDPOINT,
+        SimpleRestAdapter adapter = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT,
                 new TypeToken<PokeDetail>() {
                 }.getType(), PokeDetailDeserializer.INSTANCE);
-        PokedexService service = adapter.getPokedexService();
+        PokeApi service = adapter.getPokedexService();
         service.getPokemonDetails(_id).subscribe(new Subscriber<PokeDetail>() {
             @Override
             public void onCompleted() {

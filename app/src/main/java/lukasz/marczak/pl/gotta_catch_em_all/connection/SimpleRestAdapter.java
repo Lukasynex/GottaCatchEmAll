@@ -1,13 +1,18 @@
 package lukasz.marczak.pl.gotta_catch_em_all.connection;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
 import java.lang.reflect.Type;
 
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.GsonConverter;
+import rx.Subscriber;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
@@ -21,9 +26,10 @@ public class SimpleRestAdapter {
 
     private RestAdapter adapter;
 
-    public PokedexService getPokedexService(){
-        return adapter.create(PokedexService.class);
+    public PokeApi getPokedexService() {
+        return adapter.create(PokeApi.class);
     }
+
     /**
      * bieda version
      */
@@ -49,5 +55,23 @@ public class SimpleRestAdapter {
                 .setEndpoint(endpoint)
                 .setConverter(converter)
                 .build();
+    }
+
+    public static void onCompleted(String tag, Subscriber<?> subscriber) {
+        Log.d(tag, "onCompleted ");
+        if (subscriber != null && !subscriber.isUnsubscribed()) {
+            subscriber.unsubscribe();
+            subscriber = null;
+        }
+    }
+
+    public static void onErrorCompleted(String tag, Subscriber<PokeType> subscriber, Throwable e) {
+        Log.e(tag, "onErrorCompleted ");
+        Log.e(tag, "caused by " + e.getCause());
+        if (e instanceof RetrofitError)
+            Log.e(tag, "url = " + ((RetrofitError) e).getUrl());
+        Log.e(tag, "message: " + e.getMessage());
+        e.printStackTrace();
+        onCompleted(tag, subscriber);
     }
 }

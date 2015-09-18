@@ -12,22 +12,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
 import io.realm.Realm;
-import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.PokedexService;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
-import lukasz.marczak.pl.gotta_catch_em_all.data.RealmPoke;
-import rx.Observable;
-import rx.Subscriber;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
 
 public class StartFightFragment extends Fragment {
     private static final String TAG = StartFightFragment.class.getSimpleName();

@@ -24,7 +24,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokedexAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.PokedexService;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
 import retrofit.client.Response;
@@ -91,7 +91,7 @@ public class PokedexFragment extends Fragment {
 
     private void downloadMorePokes(int position, PokedexAdapter adapter) {
         Log.d(TAG, "downloadMorePokes()");
-        PokedexService service = new SimpleRestAdapter(PokedexService.POKEDEX_NAME_ENDPOINT,
+        PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT,
                 new TypeToken<String>() {
                 }.getType(),   PokeNetNameDeserializer.INSTANCE).getPokedexService();
 
@@ -114,8 +114,8 @@ public class PokedexFragment extends Fragment {
         Log.d(TAG, "setupRxQuerying()");
         List<rx.Observable<Response>> observables = new ArrayList<>();
 
-        PokedexService service = new SimpleRestAdapter(
-                PokedexService.POKEDEX_NAME_ENDPOINT, Response.class,
+        PokeApi service = new SimpleRestAdapter(
+                PokeApi.POKEMON_API_ENDPOINT, Response.class,
                 PokeNetNameDeserializer.INSTANCE).getPokedexService();
 
         for (int j = 0; j < 20; j++) {
