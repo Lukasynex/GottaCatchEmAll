@@ -1,96 +1,222 @@
 package lukasz.marczak.pl.gotta_catch_em_all.data;
 
-import java.util.List;
-
 /**
  * Created by Lukasz Marczak on 2015-09-13.
  */
 public class PokeDetail {
-    /**
-     * basic info
-     */
-    private String id;
-    private String name;
-    /**
-     * fighting details
-     */
-    private String attack;
-    private String defense;
-    private String sp_def;
-    private String sp_atk;
-    /**
-     * physical details
-     */
+
+    private int id;
+    private int attack;
+    private int catchRate;
+    private int defense;
+    private int eggCycles;
+    private int exp;
+    private int happiness;
+    private int hp;
+    private int nationalId;
+    private int pkdxId;
+    private int spAtk;
+    private int spDef;
+    private int speed;
+    private int total;
+
+    private String abilities;
+    private String created;
+//    private String descriptions;
+//    private String eggGroups;
+    private String evYield;
+    private String evolutions;
+    private String growthRate;
     private String height;
+    private String maleFemaleRatio;
+    private String modified;
+    private String moves;
+    private String name;
+    private String resourceUri;
+    private String species;
+//    private String sprites;
+    private String types;
     private String weight;
-    private String hp;
-    private String speed;
-    private String happiness;
-    private List<String> evolvesIntoList;
-    private List<String> types;
 
-    public List<String> getEvolvesIntoList() {
-        return evolvesIntoList;
-    }
-
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
+    public PokeDetail(int attack, int catchRate, int defense, int eggCycles, int exp,
+                      int happiness, int hp, int nationalId, int pkdxId, int spAtk, int spDef, int speed, int total, String abilities, String created, String evYield, String evolutions, String growthRate, String height, String maleFemaleRatio, String modified, String moves, String name, String resourceUri, String species, String types, String weight) {
+        this.attack = attack;
+        this.catchRate = catchRate;
+        this.defense = defense;
+        this.eggCycles = eggCycles;
+        this.exp = exp;
+        this.happiness = happiness;
+        this.hp = hp;
+        this.nationalId = nationalId;
+        this.pkdxId = pkdxId;
+        this.spAtk = spAtk;
+        this.spDef = spDef;
+        this.speed = speed;
+        this.total = total;
+        this.abilities = abilities;
+        this.created = created;
+        this.evYield = evYield;
+        this.evolutions = evolutions;
+        this.growthRate = growthRate;
+        this.height = height;
+        this.maleFemaleRatio = maleFemaleRatio;
+        this.modified = modified;
+        this.moves = moves;
+        this.name = name;
+        this.resourceUri = resourceUri;
+        this.species = species;
+        this.types = types;
         this.weight = weight;
     }
-
-    public void setEvolvesIntoList(List<String> evolvesIntoList) {
-        this.evolvesIntoList = evolvesIntoList;
-    }
-
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAttack() {
+    public int getAttack() {
         return attack;
     }
 
-    public void setAttack(String attack) {
+    public void setAttack(int attack) {
         this.attack = attack;
     }
 
-    public String getDefense() {
+    public int getCatchRate() {
+        return catchRate;
+    }
+
+    public void setCatchRate(int catchRate) {
+        this.catchRate = catchRate;
+    }
+
+    public int getDefense() {
         return defense;
     }
 
-    public void setDefense(String defense) {
+    public void setDefense(int defense) {
         this.defense = defense;
     }
 
-    public String getSp_def() {
-        return sp_def;
+    public int getEggCycles() {
+        return eggCycles;
     }
 
-    public void setSp_def(String sp_def) {
-        this.sp_def = sp_def;
+    public void setEggCycles(int eggCycles) {
+        this.eggCycles = eggCycles;
     }
 
-    public String getSp_atk() {
-        return sp_atk;
+    public int getExp() {
+        return exp;
     }
 
-    public void setSp_atk(String sp_atk) {
-        this.sp_atk = sp_atk;
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
+    public int getHappiness() {
+        return happiness;
+    }
+
+    public void setHappiness(int happiness) {
+        this.happiness = happiness;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public int getNationalId() {
+        return nationalId;
+    }
+
+    public void setNationalId(int nationalId) {
+        this.nationalId = nationalId;
+    }
+
+    public int getPkdxId() {
+        return pkdxId;
+    }
+
+    public void setPkdxId(int pkdxId) {
+        this.pkdxId = pkdxId;
+    }
+
+    public int getSpAtk() {
+        return spAtk;
+    }
+
+    public void setSpAtk(int spAtk) {
+        this.spAtk = spAtk;
+    }
+
+    public int getSpDef() {
+        return spDef;
+    }
+
+    public void setSpDef(int spDef) {
+        this.spDef = spDef;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public String getAbilities() {
+        return abilities;
+    }
+
+    public void setAbilities(String abilities) {
+        this.abilities = abilities;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public String getEvYield() {
+        return evYield;
+    }
+
+    public void setEvYield(String evYield) {
+        this.evYield = evYield;
+    }
+
+    public String getEvolutions() {
+        return evolutions;
+    }
+
+    public void setEvolutions(String evolutions) {
+        this.evolutions = evolutions;
+    }
+
+    public String getGrowthRate() {
+        return growthRate;
+    }
+
+    public void setGrowthRate(String growthRate) {
+        this.growthRate = growthRate;
     }
 
     public String getHeight() {
@@ -101,80 +227,111 @@ public class PokeDetail {
         this.height = height;
     }
 
-    public String getHp() {
-        return hp;
+    public String getMaleFemaleRatio() {
+        return maleFemaleRatio;
     }
 
-    public void setHp(String hp) {
-        this.hp = hp;
+    public void setMaleFemaleRatio(String maleFemaleRatio) {
+        this.maleFemaleRatio = maleFemaleRatio;
     }
 
-    public String getSpeed() {
-        return speed;
+    public String getModified() {
+        return modified;
     }
 
-    public void setSpeed(String speed) {
-        this.speed = speed;
+    public void setModified(String modified) {
+        this.modified = modified;
     }
 
-    public String getHappiness() {
-        return happiness;
+    public String getMoves() {
+        return moves;
     }
 
-    public void setHappiness(String happiness) {
-        this.happiness = happiness;
+    public void setMoves(String moves) {
+        this.moves = moves;
     }
 
-    public List<String> getTypes() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getResourceUri() {
+        return resourceUri;
+    }
+
+    public void setResourceUri(String resourceUri) {
+        this.resourceUri = resourceUri;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
+    public String getTypes() {
         return types;
     }
 
-    public void setTypes(List<String> types) {
+    public void setTypes(String types) {
         this.types = types;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
     public PokeDetail() {
     }
 
-    @Override
-    public String toString() {
-        String softTypes = "", evolves = "";
-        String evolvesInto = "", _types="";
-
-
-        if (!types.isEmpty()) {
-            for (int k = 0; k < types.size(); k++) {
-                String s = types.get(k);
-                if (k != types.size() - 1)
-                    softTypes += s + ",";
-                else softTypes += s;
-
-            }
-            _types = "types : " + softTypes;
-
-        }
-
-
-
-        if (!evolvesIntoList.isEmpty()) {
-            for (int k = 0; k < evolvesIntoList.size(); k++) {
-                String s = evolvesIntoList.get(k);
-                if (k != evolvesIntoList.size() - 1)
-                    evolves += s + ",";
-                else evolves += s;
-
-            }
-            evolvesInto = "Evolves into " + evolves;
-
-        }
-
-        return "attack : " + attack + "\n"
-                + "defense : " + defense + "\n"
-                + "HP : " + hp + "\n"
-                + "height : " + height + "\n"
-                + "weight : " + weight + "\n"
-                + "speed : " + speed + "\n"
-                + _types + "\n"
-                + evolvesInto;
-    }
+//    @Override
+//    public String toString() {
+//        String softTypes = "", evolves = "";
+//        String evolvesInto = "", _types = "";
+//
+//
+//        if (!types.isEmpty()) {
+//            for (int k = 0; k < types.size(); k++) {
+//                String s = types.get(k);
+//                if (k != types.size() - 1)
+//                    softTypes += s + ",";
+//                else softTypes += s;
+//
+//            }
+//            _types = "types : " + softTypes;
+//
+//        }
+//
+//
+//        if (!evolvesIntoList.isEmpty()) {
+//            for (int k = 0; k < evolvesIntoList.size(); k++) {
+//                String s = evolvesIntoList.get(k);
+//                if (k != evolvesIntoList.size() - 1)
+//                    evolves += s + ",";
+//                else evolves += s;
+//
+//            }
+//            evolvesInto = "Evolves into " + evolves;
+//
+//        }
+//
+//        return "attack : " + attack + "\n"
+//                + "defense : " + defense + "\n"
+//                + "HP : " + hp + "\n"
+//                + "height : " + height + "\n"
+//                + "weight : " + weight + "\n"
+//                + "speed : " + speed + "\n"
+//                + _types + "\n"
+//                + evolvesInto;
+//    }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 
 /**
  * Created by Lukasz Marczak on 2015-08-24.
@@ -36,8 +36,8 @@ public final class PokeUtils {
 
     public static String getPokemonNameFromId(Context context, final int pokemonID) {
         Log.d(TAG, "getPokemonNameFromId " + pokemonID);
-        RealmPoke poke = Realm.getInstance(context)
-                .where(RealmPoke.class).equalTo("id", String.valueOf(pokemonID), false).findFirst();
+        RealmPokeDetail poke = Realm.getInstance(context)
+                .where(RealmPokeDetail.class).equalTo("id", String.valueOf(pokemonID), false).findFirst();
         if (poke != null) {
             Log.i(TAG, "found pokemon by id: " + poke.getName());
             return poke.getName();

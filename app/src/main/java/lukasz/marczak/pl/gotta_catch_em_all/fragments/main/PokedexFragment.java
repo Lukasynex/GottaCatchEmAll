@@ -93,7 +93,7 @@ public class PokedexFragment extends Fragment {
         Log.d(TAG, "downloadMorePokes()");
         PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT,
                 new TypeToken<String>() {
-                }.getType(),   PokeNetNameDeserializer.INSTANCE).getPokedexService();
+                }.getType(), PokeNetNameDeserializer.INSTANCE).getPokedexService();
 
         int maxSize = (position + Config.MORE_POKES) > Config.MAX_POKES
                 ? Config.MAX_POKES : position + Config.MORE_POKES;
@@ -175,7 +175,7 @@ public class PokedexFragment extends Fragment {
         Type collectionType = new TypeToken<String>() {
         }.getType();
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(collectionType,  PokeNetNameDeserializer.INSTANCE);
+        gsonBuilder.registerTypeAdapter(collectionType, PokeNetNameDeserializer.INSTANCE);
         Gson gson = gsonBuilder.create();
         GsonConverter converter = new GsonConverter(gson);
 

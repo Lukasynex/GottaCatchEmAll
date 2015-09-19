@@ -21,12 +21,9 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.DownloadPokedex;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.TypesDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
@@ -170,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Boolean call(Boolean aBoolean) {
                 Log.d(TAG, "Downloading data for draggable list in thread");
-                DownloadPokedex.INSTANCE.start(MainActivity.this);
+//                DownloadPokedex.INSTANCE.start(MainActivity.this);
                 return aBoolean;
             }
         });

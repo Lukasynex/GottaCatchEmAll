@@ -21,7 +21,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 
 public class StartFightFragment extends Fragment {
     private static final String TAG = StartFightFragment.class.getSimpleName();
@@ -55,7 +55,7 @@ public class StartFightFragment extends Fragment {
             pokemonID = getArguments().getInt(BeaconsInfo.PokeInterface.POKEMON_ID);
         }
         Log.d(TAG, "onCreate ");
-        RealmPoke poke = Realm.getInstance(getActivity()).where(RealmPoke.class)
+        RealmPokeDetail poke = Realm.getInstance(getActivity()).where(RealmPokeDetail.class)
                 .equalTo("id", String.valueOf(pokemonID), false).findFirst();
         pokemonName = poke.getName();
 //        String image = PokeUtils.getPokeResByID(pokemonID);

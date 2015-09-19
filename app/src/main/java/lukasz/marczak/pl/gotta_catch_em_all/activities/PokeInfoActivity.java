@@ -21,7 +21,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
-import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import rx.Subscriber;
 
 public class PokeInfoActivity extends AppCompatActivity {
@@ -57,10 +57,10 @@ public class PokeInfoActivity extends AppCompatActivity {
     private void setupDetails(int _id) {
         Log.d(TAG, "setupDetails ");
         SimpleRestAdapter adapter = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT,
-                new TypeToken<PokeDetail>() {
+                new TypeToken<PokeMove>() {
                 }.getType(), PokeDetailDeserializer.INSTANCE);
         PokeApi service = adapter.getPokedexService();
-        service.getPokemonDetails(_id).subscribe(new Subscriber<PokeDetail>() {
+        service.getPokemonDetail(_id).subscribe(new Subscriber<PokeMove>() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "onCompleted ");
@@ -72,7 +72,7 @@ public class PokeInfoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(final PokeDetail pokeDetail) {
+            public void onNext(final PokeMove pokeDetail) {
                 Log.d(TAG, "onNext ");
                 runOnUiThread(new Runnable() {
                     @Override

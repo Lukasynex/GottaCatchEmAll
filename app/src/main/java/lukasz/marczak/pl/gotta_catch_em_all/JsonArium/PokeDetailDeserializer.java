@@ -1,5 +1,6 @@
 package lukasz.marczak.pl.gotta_catch_em_all.JsonArium;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -10,83 +11,107 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
+import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
  */
 public class PokeDetailDeserializer implements JsonDeserializer<PokeDetail> {
 
+    private static Context context;
     public static final String TAG = PokeDetailDeserializer.class.getSimpleName();
-    public static JsonDeserializer INSTANCE = new PokeDetailDeserializer();
+    private static final PokeDetailDeserializer instance = new PokeDetailDeserializer();
+
+    private PokeDetailDeserializer() {
+    }
+
+    public static PokeDetailDeserializer getInstance(Context c) {
+        context = c;
+        return instance;
+    }
 
     @Override
-    public PokeDetail deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public PokeDetail deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext con) throws JsonParseException {
 
         Log.d(TAG, "received json: " + json.toString());
-        PokeDetail pokeDetail = new PokeDetail();
 
         JsonObject object = json.getAsJsonObject();
-
-        String attack = object.get("attack").getAsString();
-        pokeDetail.setAttack(attack);
-
-        String defense = object.get("defense").getAsString();
-        pokeDetail.setDefense(defense);
-
-        String sp_atk = object.get("sp_atk").getAsString();
-        pokeDetail.setSp_atk(sp_atk);
-
-        String sp_def = object.get("sp_def").getAsString();
-        pokeDetail.setSp_def(sp_def);
-
-        String height = object.get("height").getAsString();
-        pokeDetail.setHeight(height);
-
-        String weight = object.get("weight").getAsString();
-        pokeDetail.setWeight(weight);
-
-        String hp = object.get("hp").getAsString();
-        pokeDetail.setHp(hp);
-
-        String speed = object.get("speed").getAsString();
-        pokeDetail.setSpeed(speed);
-
-        String happy = object.get("happiness").getAsString();
-        pokeDetail.setHappiness(happy);
-
-        String name = object.get("name").getAsString();
-        pokeDetail.setName(name);
-
-        String id = object.get("pkdx_id").getAsString();
-        pokeDetail.setId(id);
-
-
+        JsonArray abilities = object.get("abilities").getAsJsonArray();
+//        JsonArray descriptions = object.get("descriptions").getAsJsonArray();
+//        JsonArray egg_groups = object.get("egg_groups").getAsJsonArray();
         JsonArray evolutions = object.get("evolutions").getAsJsonArray();
-
-        List<String> pokemon_evolutions = new ArrayList<>();
-        if (evolutions != null) {
-            for (int j = 0; j < evolutions.size(); j++) {
-                pokemon_evolutions.add(
-                        evolutions.get(j).getAsJsonObject().get("to").getAsString()
-                );
-            }
-        }
-        pokeDetail.setEvolvesIntoList(pokemon_evolutions);
+        JsonArray moves = object.get("moves").getAsJsonArray();
         JsonArray types = object.get("types").getAsJsonArray();
-
-        List<String> pokemon_types = new ArrayList<>();
-        if (types != null) {
-            for (int j = 0; j < types.size(); j++) {
-                pokemon_types.add(
-                        types.get(j).getAsJsonObject().get("name").getAsString()
-                );
-            }
+        String abilitieS = "";
+//        String descriptionS = "";
+//        String egg_groupS = "";
+        String evolutionS = "";
+        String moveS = "";
+        String typeS = "";
+        for (int x = 0; x < moves.size(); x++) {
+            String moveId = moves.get(x).getAsJsonObject().get("resource_uri")
+                    .getAsString().split("/")[4];
+            String learnType = moves.get(x).getAsJsonObject().get("learn_type").getAsString();
+            if (learnType.equals("level up"))
+                moveId += "&" + moves.get(x).getAsJsonObject().get("level").getAsString();
+            moveS += moveId + "|";
         }
-        pokeDetail.setTypes(pokemon_types);
-        return pokeDetail;
+        for (int x = 0; x < types.size(); x++) {
+            String typeId = types.get(x).getAsJsonObject().get("resource_uri")
+                    .getAsString().split("/")[4];
+            typeS += typeId + "|";
+        }
+        for (int x = 0; x < evolutions.size(); x++) {
+            String evolutionId = types.get(x).getAsJsonObject().get("resource_uri")
+                    .getAsString().split("/")[4];
+            evolutionS += evolutionId + "|";
+        }
+        for (int x = 0; x < abilities.size(); x++) {
+            String abilityId = types.get(x).getAsJsonObject().get("resource_uri")
+                    .getAsString().split("/")[4];
+            abilitieS += abilityId + "|";
+        }
+
+        int attack = object.get("attack").getAsInt();
+        int catchRate = object.get("catch_rate").getAsInt();
+        int defense = object.get("defense").getAsInt();
+        int eggCycles = object.get("egg_cycles").getAsInt();
+        int exp = object.get("exp").getAsInt();
+        int happiness = object.get("happiness").getAsInt();
+        int hp = object.get("hp").getAsInt();
+        int nationalId = object.get("national_id").getAsInt();
+        int pkdxId = object.get("pkdx_id").getAsInt();
+        int spAtk = object.get("sp_atk").getAsInt();
+        int spDef = object.get("sp_def").getAsInt();
+        int speed = object.get("speed").getAsInt();
+        int total = object.get("total").getAsInt();
+
+        String created = object.get("created").getAsString();
+        String evYield = object.get("ev_yield").getAsString();
+        String growthRate = object.get("growth_rate").getAsString();
+        String height = object.get("height").getAsString();
+        String maleFemaleRatio = object.get("male_female_ratio").getAsString();
+        String modified = object.get("modified").getAsString();
+        String name = object.get("name").getAsString();
+        String resourceUri = object.get("resource_uri").getAsString();
+        String species = object.get("species").getAsString();
+        String weight = object.get("weight").getAsString();
+
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        RealmPokeDetail detail = realm.createObject(RealmPokeDetail.class);
+
+        detail.setAttack(attack);
+        detail.setCatchRate(catchRate);
+        detail.setName(name);
+
+        realm.commitTransaction();
+
+        return new PokeDetail(attack, catchRate, defense, eggCycles, exp, happiness, hp, nationalId,
+                pkdxId, spAtk, spDef, speed, total, abilitieS, created, evYield, evolutionS, growthRate,
+                height, maleFemaleRatio, modified, moveS, name, resourceUri, species, typeS, weight);
     }
 }

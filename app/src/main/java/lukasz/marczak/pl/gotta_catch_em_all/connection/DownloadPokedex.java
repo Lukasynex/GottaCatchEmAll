@@ -12,7 +12,9 @@ import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -48,14 +50,15 @@ public class DownloadPokedex {
 
         final PokeApi service = new SimpleRestAdapter(
                 PokeApi.POKEMON_API_ENDPOINT, new TypeToken<String>() {
-        }.getType(),
-                PokeNetNameDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeNetNameDeserializer.INSTANCE).getPokedexService();
 
 
         List<Integer> all_150 = new LinkedList<>();
-        for (int j = 1; j < 152; j++) {
+        for (int j = 1; j < 718; j++) {
             all_150.add(j);
         }
+
+
         Observable.from(all_150).flatMap(new Func1<Integer, Observable<String>>() {
             @Override
             public Observable<String> call(Integer integer) {
@@ -83,9 +86,9 @@ public class DownloadPokedex {
                 realm.beginTransaction();
 
                 for (NetPoke netPoke : PokeUtils.netPokes) {
-                    RealmPoke poke = realm.createObject(RealmPoke.class); // Create a new object
+                    RealmID poke = realm.createObject(RealmID.class); // Create a new object
                     poke.setName(netPoke.getName());
-                    poke.setId(String.valueOf(netPoke.getID() - 1));
+                    poke.setId(netPoke.getID() - 1);
                 }
                 realm.commitTransaction();
 //                        realm.close();

@@ -23,11 +23,8 @@ public class PokeNetNameDeserializer implements JsonDeserializer<String> {
     public String deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 
         Log.d(TAG, "received json: " + json.toString());
-
         JsonObject object = json.getAsJsonObject();
-
         String name = object.get("pokemon").getAsJsonObject().get("name").getAsString();
-
         Log.d(TAG, "deserialized name: " + name);
 
         return name;

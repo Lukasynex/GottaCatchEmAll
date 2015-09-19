@@ -65,7 +65,7 @@ public class SimpleRestAdapter {
         }
     }
 
-    public static void onErrorCompleted(String tag, Subscriber<PokeType> subscriber, Throwable e) {
+    public static void onErrorCompleted(String tag, Subscriber<?> subscriber, Throwable e) {
         Log.e(tag, "onErrorCompleted ");
         Log.e(tag, "caused by " + e.getCause());
         if (e instanceof RetrofitError)

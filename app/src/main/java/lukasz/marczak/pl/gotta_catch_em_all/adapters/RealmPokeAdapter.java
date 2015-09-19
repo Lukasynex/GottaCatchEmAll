@@ -19,7 +19,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
 
 /**
@@ -49,10 +49,10 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
     public RealmPokeAdapter(RealmPokeFragment parent) {
         this.context = parent.getActivity();
         this.parent = parent;
-        List<RealmPoke> pokesUnSorted = Realm.getInstance(parent.getActivity()).where(RealmPoke.class)
+        List<RealmPokeDetail> pokesUnSorted = Realm.getInstance(parent.getActivity()).where(RealmPokeDetail.class)
                 .findAll();
         dataset.clear();
-        for (RealmPoke poke : pokesUnSorted) {
+        for (RealmPokeDetail poke : pokesUnSorted) {
 //            if (!contains(dataset, poke))
                 dataset.add(new NetPoke(Integer.valueOf(poke.getId()), poke.getName()));
         }
@@ -66,7 +66,7 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
 
     }
 
-    private boolean contains(List<NetPoke> dataset, RealmPoke poke) {
+    private boolean contains(List<NetPoke> dataset, RealmPokeDetail poke) {
 
         for (NetPoke netPoke : dataset) {
             if (netPoke.getName() .equals(poke.getName()))

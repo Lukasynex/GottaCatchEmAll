@@ -9,9 +9,17 @@ import java.util.List;
 public class PokeType {
     private Integer id;
     private String name;
-    private  String        weakness ;
-    private  String     ineffective ;
-    private  String  superEffective ;
+    private String weakness;
+    private String ineffective;
+    private String superEffective;
+
+    public PokeType(Integer id, String name, String weakness, String ineffective, String superEffective) {
+        this.id = id;
+        this.name = name;
+        this.weakness = weakness;
+        this.ineffective = ineffective;
+        this.superEffective = superEffective;
+    }
 
     public Integer getId() {
         return id;
