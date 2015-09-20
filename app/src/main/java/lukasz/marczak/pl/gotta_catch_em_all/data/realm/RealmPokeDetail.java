@@ -1,5 +1,7 @@
 package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 
+import java.util.UUID;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -14,7 +16,6 @@ public class RealmPokeDetail extends RealmObject {
     private int spAtk;
     private int spDef;
     private int speed;
-    @PrimaryKey
     private int pkdxId;
     private int attack;
     private int defense;
@@ -22,7 +23,8 @@ public class RealmPokeDetail extends RealmObject {
     private int catchRate;
     private int happiness;
     private int nationalId;
-
+    @PrimaryKey
+    private String uuid;
     private String name;
     private String moves;
     private String types;
@@ -37,10 +39,19 @@ public class RealmPokeDetail extends RealmObject {
     private String growthRate;
     private String resourceUri;
     private String maleFemaleRatio;
+
     //    private String descriptions;
 //    private String eggGroups;
     //    private String sprites;
     public RealmPokeDetail() {
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public int getHp() {

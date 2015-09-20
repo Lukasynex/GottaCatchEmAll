@@ -1,5 +1,7 @@
 package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 
+import java.util.UUID;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -8,12 +10,10 @@ import io.realm.annotations.PrimaryKey;
  * Represents single move of pokemon, see example Json here: http://pokeapi.co/api/v1/move/153/
  */
 public class RealmMove extends RealmObject {
-    @PrimaryKey
     private int id;
     private int pp;
     private int power;
     private int accuracy;
-
     private String name;
     private String created;
     private String category;
@@ -21,7 +21,18 @@ public class RealmMove extends RealmObject {
     private String description;
     private String resourceUri;
 
+    @PrimaryKey
+    private String uuid;
+
     public RealmMove() {
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public int getId() {

@@ -2,6 +2,7 @@ package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 import io.realm.RealmList;
@@ -12,14 +13,23 @@ import io.realm.annotations.PrimaryKey;
  * Created by Lukasz Marczak on 2015-09-13.
  */
 public class RealmType extends RealmObject {
-    @PrimaryKey
     private int id;
+    @PrimaryKey
+    private String uuid;
     private String name;
     private String ineffective;
     private String superEffective;
     private String weakness;
 
     public RealmType() {
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getIneffective() {

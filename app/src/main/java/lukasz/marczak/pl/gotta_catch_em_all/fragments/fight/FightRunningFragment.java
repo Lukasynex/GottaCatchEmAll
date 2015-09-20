@@ -10,27 +10,38 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tt.whorlviewlibrary.WhorlView;
 
+import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.MyPokesAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokeAttacksAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Randy;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeDetailDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
+import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
+import lukasz.marczak.pl.gotta_catch_em_all.game.Engine;
 
 
-public class FightRunningFragment extends Fragment {
+public class FightRunningFragment extends Fragment implements Progressable {
 
     final static String TAG = FightRunningFragment.class.getSimpleName();
     ImageView yourPokemon, opponentPokemon;
+    WhorlView action;
     FightActivity parentActivity;
     String opponentName = "";
     boolean strongPokemon = Randy.randomAnswer();
@@ -52,6 +63,36 @@ public class FightRunningFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fetchPokemonDetails(opponentName);
+    }
+
+    private void fetchPokemonDetails(String opponentName) {
+        Log.d(TAG, "fetchPokemonDetails ");
+        int pokemonID = PokeUtils.getPokemonIdFromName(this.getActivity(), opponentName);
+        int yourPokeID = PokeUtils.getPokemonIdFromName(this.getActivity(), MainActivity.pokeName);
+        RealmPokeDetail poke = Realm.getInstance(getActivity()).where(RealmPokeDetail.class)
+                .equalTo("pkdxId", pokemonID).findFirst();
+        if (poke == null) {
+            Log.e(TAG, "poke detail " + pokemonID + " is null, fetching in progress...");
+            new PokeDetailDownloader() {
+                @Override
+                public void onDataReceived(PokeDetail detail) {
+                    Log.i(TAG, "onDataReceived " + detail.getName());
+                    Engine.INSTANCE.setOpponentDetail(detail);
+                }
+            }.start(this, pokemonID);
+
+            new PokeDetailDownloader() {
+                @Override
+                public void onDataReceived(PokeDetail detail) {
+                    Log.i(TAG, "onDataReceived " + detail.getName());
+                    Engine.INSTANCE.setYourPokeDetail(detail);
+                }
+            }.start(this, yourPokeID);
+
+        } else {
+            Engine.INSTANCE.setOpponentDetail(DBManager.asPokeDetail(poke));
+        }
     }
 
     @Override
@@ -59,6 +100,7 @@ public class FightRunningFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_fight_running, container, false);
+        action = (WhorlView) view.findViewById(R.id.action);
         yourPokemon = (ImageView) view.findViewById(R.id.your_pokemon_back);
         opponentPokemon = (ImageView) view.findViewById(R.id.opponent_front);
         TextView fight = (TextView) view.findViewById(R.id.fight);
@@ -86,13 +128,10 @@ public class FightRunningFragment extends Fragment {
         yourPokeHP = (ProgressBar) yourPokemonBar.findViewById(R.id.progressBar2);
 
         yourPokeHP.setProgress(100);
-        opponentHP.setProgress(75);
+        opponentHP.setProgress(100);
 
         opponentLevel.setText("Level " + Randy.from(10));
         yourPokeLevel.setText("Level 4");
-
-//        HPManager.INSTANCE.injectOpponentStats(opponentEmptyHP, opponentFullHP, opponentLevel, opponentHP);
-//        HPManager.INSTANCE.injectYourPokemonStats(yourPokeEmptyHP, yourPokeFullHP, yourPokeLevel, yourPokeHP);
 
         opponentNameTV.setText(PokeUtils.getPrettyPokemonName(opponentName));
         yourPokeNameTV.setText(PokeUtils.getPrettyPokemonName(MainActivity.pokeName));
@@ -118,6 +157,29 @@ public class FightRunningFragment extends Fragment {
                         Log.d(TAG, "action down");
                         view.setBackgroundColor(Color.LTGRAY);
                         switch (mode) {
+                            case 0: {
+                                Log.d(TAG, "onTouch select attack");
+                                new SelectMenuEngine.FIGHT(FightRunningFragment.this) {
+
+                                    @Override
+                                    public void onAttackChosen(int position) {
+                                        PokeMove move = PokeAttacksAdapter.dataset.get(position);
+                                        Log.d(TAG, "Player " + Engine.INSTANCE.getYourPoke().getName() + " used "
+                                                + move.getName() + "!!!");
+                                    }
+
+                                    @Override
+                                    public PokeDetail getPokeDetail() {
+                                        return Engine.INSTANCE.getYourPoke().getDetail();
+                                    }
+
+                                    @Override
+                                    public int getCurrentPokemonLevel() {
+                                        return Engine.INSTANCE.getYourPoke().getCurrentLevel();
+                                    }
+                                };
+                                break;
+                            }
                             case 2: {
                                 new SelectMenuEngine.POKEMON(getActivity()) {
                                     @Override
@@ -157,6 +219,11 @@ public class FightRunningFragment extends Fragment {
         };
     }
 
+    public void updateHpBar(boolean isOpponent, int value) {
+        if (isOpponent) opponentHP.setProgress(value);
+        else yourPokeHP.setProgress(value);
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -179,5 +246,18 @@ public class FightRunningFragment extends Fragment {
 
     public String getOppponentPokemonResource() {
         return PokeSpritesManager.getPokemonFrontByName(opponentName);
+    }
+
+    @Override
+    public void showProgressBar(boolean show) {
+        Log.d(TAG, "showProgressBar " + show);
+        int vis = show ? View.VISIBLE : View.INVISIBLE;
+        if (action != null) {
+            action.setVisibility(vis);
+            if (!action.isCircling() && action.isShown())
+                action.start();
+            else if (!action.isShown())
+                action.stop();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package lukasz.marczak.pl.gotta_catch_em_all.fragments.fight;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,10 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.MyPokesAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokeAttacksAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 
 /**
  * Created by Lukasz Marczak on 2015-09-16.
@@ -63,6 +68,60 @@ public class SelectMenuEngine {
             selectPokeWindow.show();
         }
 
+    }
+
+    public static abstract class FIGHT {
+
+        public abstract void onAttackChosen(final int position);
+
+        public abstract PokeDetail getPokeDetail();
+
+        public abstract int getCurrentPokemonLevel();
+
+        public FIGHT(final Progressable context) {
+
+            final Dialog selectAttackWindow = new Dialog(context.getActivity());
+            //disables title
+            selectAttackWindow.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            //this makes cardview look
+            selectAttackWindow.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            selectAttackWindow.setContentView(R.layout.select_poke_window);
+
+            TextView cancelButton = (TextView) selectAttackWindow.findViewById(R.id.cancel1);
+            final RecyclerView attacksRecycler = (RecyclerView) selectAttackWindow.findViewById(R.id.recycler_view1);
+            final ProgressBar bar = (ProgressBar) selectAttackWindow.findViewById(R.id.progressBarLayout1);
+            attacksRecycler.setLayoutManager(new LinearLayoutManager(context.getActivity()));
+
+            attacksRecycler.setAdapter(new PokeAttacksAdapter(context, getPokeDetail(), getCurrentPokemonLevel()) {
+                @Override
+                public void showProgressBar(boolean show) {
+                    Log.d(TAG, "showProgressBar ");
+//                    int visbl = show ? View.VISIBLE : View.INVISIBLE;
+//                    int invisibl = !show ? View.VISIBLE : View.INVISIBLE;
+//                    bar.setVisibility(visbl);
+//                    attacksRecycler.setVisibility(invisibl);
+                }
+
+                @Override
+                public Activity getActivity() {
+                    return context.getActivity();
+                }
+
+                @Override
+                public void onItemClick(int postion) {
+                    Log.d(TAG, "onItemClick " + postion);
+                    selectAttackWindow.dismiss();
+                }
+            });
+
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectAttackWindow.dismiss();
+                }
+            });
+            selectAttackWindow.show();
+        }
     }
 
     public void BAG() {

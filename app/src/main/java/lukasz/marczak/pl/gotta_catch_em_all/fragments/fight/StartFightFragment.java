@@ -19,8 +19,11 @@ import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeDetailDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 
 public class StartFightFragment extends Fragment {
@@ -30,7 +33,7 @@ public class StartFightFragment extends Fragment {
     private FightActivity parentActivity;
     private String pokemonName;
     private int pokemonID = 1;
-    private Handler handlarzNarkotykow = new Handler();
+    private Handler handlarz = new Handler();
 
     public static StartFightFragment newInstance(int ID) {
         StartFightFragment fragment = new StartFightFragment();
@@ -46,19 +49,22 @@ public class StartFightFragment extends Fragment {
         // Required empty public constructor
     }
 
+    //    public void showProgressBar(boolean show) {
+//        Log.d(TAG, "showProgressBar " + show);
+//        int vis = show ? View.VISIBLE : View.GONE;
+//        int inv = !show ? View.VISIBLE : View.GONE;
+//        progressBarLayout.setVisibility(vis);
+//        main.setVisibility(inv);
+//    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate ");
         if (getArguments() != null) {
-//            pokemonName = getArguments().getString(BeaconsInfo.PokeInterface.POKEMON_NAME);
-            pokemonID = getArguments().getInt(BeaconsInfo.PokeInterface.POKEMON_ID);
+            pokemonID = getArguments().getInt(BeaconsInfo.PokeInterface.POKEMON_ID, 12);
         }
+        pokemonName = PokeUtils.getPokemonNameFromId(this.getActivity(), pokemonID);
         Log.d(TAG, "onCreate ");
-        RealmPokeDetail poke = Realm.getInstance(getActivity()).where(RealmPokeDetail.class)
-                .equalTo("pkdxId", String.valueOf(pokemonID), false).findFirst();
-        pokemonName = poke.getName();
-//        String image = PokeUtils.getPokeResByID(pokemonID);
     }
 
     @Override
@@ -81,7 +87,7 @@ public class StartFightFragment extends Fragment {
 
     private void startFight() {
         Log.d(TAG, "startFight()");
-        handlarzNarkotykow.postDelayed(fightBody(), 3000); //delay of 2 seconds
+        handlarz.postDelayed(fightBody(), 3000); //delay of 2 seconds
     }
 
     private Runnable fightBody() {
@@ -113,4 +119,5 @@ public class StartFightFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
 }

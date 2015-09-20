@@ -1,9 +1,12 @@
 package lukasz.marczak.pl.gotta_catch_em_all.connection;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,38 +14,60 @@ import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeMoveDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 import retrofit.RetrofitError;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Lukasz Marczak on 2015-09-18.
+ * fetches selected set of attacks
  */
-public class MovesDownloader {
-    public static final MovesDownloader INSTANCE = new MovesDownloader();
+public abstract class MovesDownloader {
     public static final String TAG = MovesDownloader.class.getSimpleName();
 
-    private MovesDownloader() {
-    }
+    public abstract void onDataReceived(List<PokeMove> moves);
 
-    public void start(final MainActivity context) {
-        Log.d(TAG, "start ");
-        List<Integer> moves = new LinkedList<>();
-        for (int j = 1; j < 626; j++) {
-            moves.add(j);
+    public void start(final Progressable context, List<Integer> moves) {
+        if (moves == null || moves.size() == 0) {
+            Log.e(TAG, "start ");
+            Realm realm = Realm.getInstance(context.getActivity());
+            realm.beginTransaction();
+
+            List<RealmMove> list = realm.where(RealmMove.class).findAllSorted("id", true);
+            List<PokeMove> moves1 = new ArrayList<>();
+
+            for (RealmMove t : list) {
+                Log.d(TAG, "type no. " + t.getId() + "," + t.getName());
+                moves1.add(DBManager.asPokeMove(t));
+            }
+            realm.commitTransaction();
+            realm.close();
+            onDataReceived(moves1);
+            return;
         }
+        Log.d(TAG, "start ");
 
+        Realm realm = Realm.getInstance(context.getActivity());
+        realm.beginTransaction();
+        List<RealmMove> realmAvailableMoves = realm.where(RealmMove.class).findAll();
+        List<Integer> queryList = getMissingMoves(moves, realmAvailableMoves);
+        realm.commitTransaction();
+        realm.close();
         final PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeMove>() {
-        }.getType(), PokeMoveDeserializer.getInstance(null)).getPokedexService();
+        }.getType(), PokeMoveDeserializer.getInstance()).getPokedexService();
 
-        Observable.from(moves).flatMap(new Func1<Integer, Observable<PokeMove>>() {
+        Observable.from(queryList).flatMap(new Func1<Integer, Observable<PokeMove>>() {
             @Override
-            public Observable<PokeMove> call(Integer newType) {
-                return service.getPokemonMove(newType);
+            public Observable<PokeMove> call(Integer newMove) {
+                return service.getPokemonMove(newMove);
             }
         }).onErrorResumeNext(new Func1<Throwable, Observable<PokeMove>>() {
             @Override
@@ -53,22 +78,21 @@ public class MovesDownloader {
 
                 return Observable.empty();
             }
-        })
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d(TAG, "show loader");
-                                context.showProgressBar(true);
-                            }
-                        });
-                    }
-                }).doOnCompleted(new Action0() {
+        }).doOnSubscribe(new Action0() {
             @Override
             public void call() {
-                context.runOnUiThread(new Runnable() {
+                context.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "show loader");
+                        context.showProgressBar(true);
+                    }
+                });
+            }
+        }).doOnCompleted(new Action0() {
+            @Override
+            public void call() {
+                context.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Log.d(TAG, "hide loader");
@@ -76,63 +100,97 @@ public class MovesDownloader {
                     }
                 });
             }
-        }).subscribe(new Subscriber<PokeMove>() {
-            @Override
-            public void onCompleted() {
-                Realm realm = Realm.getInstance(context);
-                List<RealmType> list = realm.where(RealmType.class).findAllSorted("id", true);
-                for (RealmType t : list) {
-                    Log.d(TAG, "type no. " + t.getId() + "," + t.getName());
-                }
-                SimpleRestAdapter.onCompleted(TAG, this);
-            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<PokeMove>() {
+                    @Override
+                    public void onCompleted() {
+                        Realm realm = Realm.getInstance(context.getActivity());
+                        realm.beginTransaction();
+                        List<RealmMove> list = realm.where(RealmMove.class).findAllSorted("id", true);
 
-            @Override
-            public void onError(Throwable e) {
-                SimpleRestAdapter.onErrorCompleted(TAG, this, e);
-            }
+                        final List<PokeMove> moves = new ArrayList<>();
+                        for (RealmMove t : list) {
+                            Log.d(TAG, "type no. " + t.getId() + "," + t.getName());
+                            moves.add(DBManager.asPokeMove(t));
+                        }
+                        context.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                onDataReceived(moves);
+                            }
+                        });
+                        realm.commitTransaction();
+                        realm.close();
+                        SimpleRestAdapter.onCompleted(TAG, this);
+                    }
 
-            @Override
-            public void onNext(PokeMove pokeMove) {
-                if (pokeMove == null) {
-                    Log.e(TAG, "impossibru to got there");
-                    return;
-                }
-                Log.d(TAG, "onNext " + pokeMove.getId() + "," + pokeMove.getName());
-                Realm realm = Realm.getInstance(context);
-                realm.beginTransaction();
+                    @Override
+                    public void onError(Throwable e) {
+                        Realm realm = Realm.getInstance(context.getActivity());
+                        realm.beginTransaction();
+                        List<RealmMove> list = realm.where(RealmMove.class).findAllSorted("id", true);
 
-                RealmMove move = realm.createObject(RealmMove.class);
-                move.setId(pokeMove.getId());
-                move.setPp(pokeMove.getPp());
-                move.setName(pokeMove.getName());
-                move.setPower(pokeMove.getPower());
-                move.setCreated(pokeMove.getCreated());
-                move.setAccuracy(pokeMove.getAccuracy());
-                move.setCategory(pokeMove.getCategory());
-                move.setModified(pokeMove.getModified());
-                move.setDescription(pokeMove.getDescription());
-                move.setResourceUri(pokeMove.getResourceUri());
+                        final List<PokeMove> moves = new ArrayList<>();
+                        for (RealmMove t : list) {
+                            Log.d(TAG, "type no. " + t.getId() + "," + t.getName());
+                            moves.add(DBManager.asPokeMove(t));
+                        }
+                        context.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                onDataReceived(moves);
+                            }
+                        });
+                        realm.commitTransaction();
+                        realm.close();
+                        SimpleRestAdapter.onErrorCompleted(TAG, this, e);
+                    }
 
-                realm.commitTransaction();
-                realm.close();
-            }
-        });
+                    @Override
+                    public void onNext(PokeMove pokeMove) {
+                        if (pokeMove == null) {
+                            Log.e(TAG, "impossibru to got there");
+                            return;
+                        }
+                        Log.d(TAG, "onNext " + pokeMove.getId() + "," + pokeMove.getName());
+                        DBManager.getInstance(context.getActivity()).savePokeMove(pokeMove);
+                    }
+                });
     }
+
+    public List<Integer> getMissingMoves(@NonNull List<Integer> pokemonMoves, @Nullable List<RealmMove> realmAvailableMoves) {
+        Log.d(TAG, "getMissingMoves ");
+        List<Integer> list = new ArrayList<>();
+
+        if (realmAvailableMoves == null) {
+            Log.e(TAG, "list is null!!!");
+            return pokemonMoves;
+        }
+
+        for (RealmMove m : realmAvailableMoves) {
+            Log.d(TAG, "getMissingMoves : realmMove " + m.getId());
+        }
+        for (Integer m : pokemonMoves) {
+            Log.d(TAG, "getMissingMoves : existing moves " + m);
+        }
+
+        for (Integer move : pokemonMoves) {
+            if (!containsId(move, realmAvailableMoves) && move != 0)
+                list.add(move);
+        }
+        for (Integer s : list) {
+            Log.d(TAG, "item for query " + s);
+        }
+        return list;
+    }
+
+    private boolean containsId(Integer moveId, List<RealmMove> realmAvailableMoves) {
+        for (RealmMove move : realmAvailableMoves)
+            if (move.getId() == moveId) {
+//                Log.d(TAG, "containsId ");
+                return true;
+            }
+        return false;
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

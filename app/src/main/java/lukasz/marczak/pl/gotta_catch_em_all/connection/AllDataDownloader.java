@@ -84,7 +84,7 @@ public class AllDataDownloader {
 
         serviceMove = new SimpleRestAdapter(
                 PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeMove>() {
-        }.getType(), PokeMoveDeserializer.getInstance(context)).getPokedexService();
+        }.getType(), PokeMoveDeserializer.getInstance()).getPokedexService();
         return this;
     }
 

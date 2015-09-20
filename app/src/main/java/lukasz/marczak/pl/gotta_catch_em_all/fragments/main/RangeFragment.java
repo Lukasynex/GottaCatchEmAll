@@ -106,7 +106,6 @@ public class RangeFragment extends Fragment {
         fightIntent.putExtra(BeaconsInfo.Bundler.CALIBRATED_POWER, iBeacon.getCalibratedTxPower());
         fightIntent.putExtra(BeaconsInfo.Bundler.ACCURACY, iBeacon.getAccuracy());
         startActivityForResult(fightIntent, Config.IntentCode.START_WILD_FIGHT);
-
     }
 
 

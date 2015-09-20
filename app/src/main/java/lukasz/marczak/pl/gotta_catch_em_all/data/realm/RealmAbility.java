@@ -1,5 +1,7 @@
 package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 
+import java.util.UUID;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -8,8 +10,9 @@ import io.realm.annotations.PrimaryKey;
  */
 public class RealmAbility extends RealmObject {
 
-    @PrimaryKey
     private int id;
+    @PrimaryKey
+    private String uuid;
     private String name;
     private String created;
     private String modified;
@@ -17,6 +20,14 @@ public class RealmAbility extends RealmObject {
     private String resourceUri;
 
     public RealmAbility() {
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public int getId() {

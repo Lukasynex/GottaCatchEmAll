@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
         if (isFirstLaunch) {
             AppFirstLauncher.INSTANCE.setup(this);
             downloadAllData();
+        }else{
+            showProgressBar(false);
         }
     }
 

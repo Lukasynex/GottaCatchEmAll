@@ -14,17 +14,16 @@ import java.lang.reflect.Type;
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmMove;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
  */
 public class PokeMoveDeserializer implements JsonDeserializer<PokeMove> {
-    public static Context context;
     public static PokeMoveDeserializer instance = new PokeMoveDeserializer();
     public static final String TAG = PokeMoveDeserializer.class.getSimpleName();
 
-    public static PokeMoveDeserializer getInstance(Context c) {
-        context = c;
+    public static PokeMoveDeserializer getInstance() {
         return instance;
     }
 
@@ -46,23 +45,6 @@ public class PokeMoveDeserializer implements JsonDeserializer<PokeMove> {
         String description = obj.get("description").getAsString();
         String resourceUri = obj.get("resource_uri").getAsString();
 
-//        Realm realm = Realm.getInstance(context);
-//        realm.beginTransaction();
-//
-//        RealmMove move = realm.createObject(RealmMove.class);
-//        move.setId(id);
-//        move.setPp(pp);
-//        move.setName(name);
-//        move.setPower(power);
-//        move.setCreated(created);
-//        move.setAccuracy(accuracy);
-//        move.setCategory(category);
-//        move.setModified(modified);
-//        move.setDescription(description);
-//        move.setResourceUri(resourceUri);
-//
-//        realm.commitTransaction();
-//        realm.close();
         return new PokeMove(id, pp, power, accuracy, name,
                 created, category, modified, description, resourceUri);
     }

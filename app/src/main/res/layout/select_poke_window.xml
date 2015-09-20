@@ -23,6 +23,14 @@
         android:layout_height="250sp"
         android:layout_below="@+id/title1" />
 
+    <ProgressBar
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/progressBarLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/cancel1"
         android:layout_width="wrap_content"

@@ -28,13 +28,25 @@
         android:layout_height="150sp"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/action" />
-
-    <ImageView
+    <com.tt.whorlviewlibrary.WhorlView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/action"
-        android:layout_width="100sp"
-        android:layout_height="100sp"
-        android:layout_above="@+id/your_pokemon_back"
-        android:layout_centerHorizontal="true" />
+        android:visibility="invisible"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:paddingTop="15sp"
+        app:whorlview_circle_colors="#F14336_#c0392b_#2980b9_#f39c12_#16a085"
+        app:whorlview_circle_speed="270"
+        app:whorlview_parallax="medium"
+        app:whorlview_strokeWidth="6"
+        app:whorlview_sweepAngle="90" />
+    <!--<ProgressBar-->
+        <!--android:id="@+id/action"-->
+        <!--android:layout_width="100sp"-->
+        <!--android:layout_height="100sp"-->
+        <!--android:layout_above="@+id/your_pokemon_back"-->
+        <!--android:layout_centerHorizontal="true" />-->
 
     <ImageView
         android:id="@+id/your_pokemon_back"

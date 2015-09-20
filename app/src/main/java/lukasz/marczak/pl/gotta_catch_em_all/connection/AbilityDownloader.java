@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeAbilityDeserializer;
@@ -105,6 +106,7 @@ public class AbilityDownloader {
                 RealmAbility move = realm.createObject(RealmAbility.class);
                 move.setId(pokeAbility.getId());
                 move.setName(pokeAbility.getName());
+                move.setUuid(UUID.randomUUID().toString());
                 move.setCreated(pokeAbility.getCreated());
                 move.setModified(pokeAbility.getModified());
                 move.setDescription(pokeAbility.getDescription());

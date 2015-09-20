@@ -9,6 +9,7 @@ import java.util.List;
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 
 /**
@@ -37,16 +38,32 @@ public final class PokeUtils {
 
     public static String getPokemonNameFromId(Context context, final int pokemonID) {
         Log.d(TAG, "getPokemonNameFromId " + pokemonID);
-        RealmPokeDetail poke = Realm.getInstance(context)
-                .where(RealmPokeDetail.class).equalTo("pkdxId", pokemonID).findFirst();
-        if (poke != null) {
-            Log.i(TAG, "found pokemon by id: " + poke.getName());
-            return poke.getName();
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        RealmID pokeID = realm.where(RealmID.class).equalTo("id", pokemonID).findFirst();
+        String pokeName = "pikachu";
+        if (pokeID != null) {
+            pokeName = pokeID.getName();
         }
-        return "pikachu";
+        realm.commitTransaction();
+        realm.close();
+        return pokeName;
     }
 
     public static String getPrettyPokemonName(String pokemonName) {
         return pokemonName.substring(0, 1).toUpperCase() + pokemonName.substring(1);
+    }
+
+    public static int getPokemonIdFromName(Context context, String opponentName) {
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        RealmID pokeID = realm.where(RealmID.class).equalTo("name", opponentName, false).findFirst();
+        int id = 25;
+        if (pokeID != null) id = pokeID.getId();
+
+        realm.commitTransaction();
+        realm.close();
+
+        return id;
     }
 }

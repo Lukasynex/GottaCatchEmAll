@@ -3,6 +3,8 @@ package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.UUID;
+
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeAbility;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
@@ -16,6 +18,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
 public class DBManager {
 
     private static Context context;
+
     private DBManager() {
     }
 
@@ -33,6 +36,8 @@ public class DBManager {
         realm.beginTransaction();
 
         RealmID pokeID = realm.createObject(RealmID.class);
+        pokeID.setUuid(UUID.randomUUID().toString());
+
         pokeID.setName(poke.getName());
         pokeID.setId(poke.getId());
 
@@ -48,10 +53,15 @@ public class DBManager {
         type.setWeakness(pokeType.getWeakness());
         type.setName(pokeType.getName());
         type.setIneffective(pokeType.getIneffective());
+        type.setUuid(UUID.randomUUID().toString());
         type.setId(pokeType.getId());
         type.setSuperEffective(pokeType.getSuperEffective());
 
         typeRealm.commitTransaction();
+    }
+
+    public static PokeType asPokeType(RealmType t) {
+        return new PokeType(t.getId(), t.getName(), t.getWeakness(), t.getIneffective(), t.getSuperEffective());
     }
 
     public void savePokeAbility(PokeAbility pokeAbility) {
@@ -69,6 +79,11 @@ public class DBManager {
         abilityRealm.commitTransaction();
     }
 
+    public static PokeAbility asPokeAbility(RealmAbility ability) {
+        return new PokeAbility(ability.getId(), ability.getName(), ability.getCreated(), ability.getModified(),
+                ability.getDescription(), ability.getResourceUri());
+    }
+
     public void savePokeDetail(PokeDetail pokeDetail) {
         Log.d(TAG, "savePokeDetail " + pokeDetail.getPkdxId());
         Realm detailRealm = Realm.getInstance(context);
@@ -82,6 +97,7 @@ public class DBManager {
         detail.setExp(pokeDetail.getExp());
         detail.setHappiness(pokeDetail.getHappiness());
         detail.setHp(pokeDetail.getHp());
+        detail.setUuid(UUID.randomUUID().toString());
         detail.setNationalId(pokeDetail.getNationalId());
         detail.setPkdxId(pokeDetail.getPkdxId());
         detail.setSpAtk(pokeDetail.getSpAtk());
@@ -113,6 +129,7 @@ public class DBManager {
         move.setId(pokeMove.getId());
         move.setPp(pokeMove.getPp());
         move.setName(pokeMove.getName());
+        move.setUuid(UUID.randomUUID().toString());
         move.setPower(pokeMove.getPower());
         move.setCreated(pokeMove.getCreated());
         move.setAccuracy(pokeMove.getAccuracy());
@@ -122,5 +139,17 @@ public class DBManager {
         move.setResourceUri(pokeMove.getResourceUri());
 
         moveRealm.commitTransaction();
+    }
+
+    public static PokeMove asPokeMove(RealmMove move) {
+        return new PokeMove(move.getId(), move.getPp(), move.getPower(), move.getAccuracy(), move.getName(), move.getCreated(),
+                move.getCategory(), move.getModified(), move.getDescription(), move.getResourceUri());
+    }
+
+    public static PokeDetail asPokeDetail(RealmPokeDetail poke) {
+        return new PokeDetail(poke.getAttack(), poke.getCatchRate(), poke.getDefense(), poke.getEggCycles(), poke.getExp(), poke.getHappiness(),
+                poke.getHp(), poke.getNationalId(), poke.getPkdxId(), poke.getSpAtk(), poke.getSpDef(), poke.getSpeed(), poke.getTotal(), poke.getAbilities(),
+                poke.getCreated(), poke.getEvYield(), poke.getEvolutions(), poke.getGrowthRate(), poke.getHeight(), poke.getMaleFemaleRatio(),
+                poke.getModified(), poke.getMoves(), poke.getName(), poke.getResourceUri(), poke.getSpecies(), poke.getTypes(), poke.getWeight());
     }
 }
