@@ -1,4 +1,4 @@
-package lukasz.marczak.pl.gotta_catch_em_all.connection;
+package lukasz.marczak.pl.gotta_catch_em_all.download;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,16 +7,18 @@ import android.util.Log;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeMoveDeserializer;
-import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmMove;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 import retrofit.RetrofitError;
 import rx.Observable;
@@ -64,7 +66,12 @@ public abstract class MovesDownloader {
         final PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeMove>() {
         }.getType(), PokeMoveDeserializer.getInstance()).getPokedexService();
 
-        Observable.from(queryList).flatMap(new Func1<Integer, Observable<PokeMove>>() {
+        Set<Integer> uniqueMoves = new HashSet<>(queryList);
+        Log.d(TAG, "start with");
+        for (Integer i : uniqueMoves) {
+            Log.d(TAG, "move : " + i);
+        }
+        Observable.from(uniqueMoves).flatMap(new Func1<Integer, Observable<PokeMove>>() {
             @Override
             public Observable<PokeMove> call(Integer newMove) {
                 return service.getPokemonMove(newMove);

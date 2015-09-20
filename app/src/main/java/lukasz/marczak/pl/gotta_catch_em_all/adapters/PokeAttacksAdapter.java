@@ -15,7 +15,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.MovesDownloader;
+import lukasz.marczak.pl.gotta_catch_em_all.download.MovesDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
@@ -47,9 +47,8 @@ public abstract class PokeAttacksAdapter extends RecyclerView.Adapter<PokeAttack
         }
     }
 
-    public PokeAttacksAdapter(Progressable context, @Nullable PokeDetail detail, int currentPokemonLevel) {
+    public PokeAttacksAdapter(final Progressable context, @Nullable PokeDetail detail, int currentPokemonLevel) {
         this.context = context;
-        currentPokemonLevel = 5;
         dataset = new ArrayList<>();
         List<Integer> movesAvailable = new ArrayList<>();
         if (detail == null) {
@@ -60,9 +59,10 @@ public abstract class PokeAttacksAdapter extends RecyclerView.Adapter<PokeAttack
             detail = DBManager.asPokeDetail(detail1);
         }
         Log.d(TAG, "moves : \'" + detail.getMoves() + "\'");
-        String[] moves = detail.getMoves().split("|");
+        String[] moves = detail.getMoves().split(",");
         //every move that is on higher level is on schema: 12&3 means move 12 is available on 3 level or higher
-        for (String nextMove : moves) {
+        for (int j = 0; j < moves.length; j++) {
+            String nextMove = moves[j];
             if (nextMove.contains("&")) {
                 Log.d(TAG, "with level \'" + nextMove + "\'");
                 String[] moveAndLevel = nextMove.split("&");
@@ -98,12 +98,18 @@ public abstract class PokeAttacksAdapter extends RecyclerView.Adapter<PokeAttack
 
         new MovesDownloader() {
             @Override
-            public void onDataReceived(List<PokeMove> moves) {
+            public void onDataReceived(final List<PokeMove> moves) {
                 Log.d(TAG, "onDataReceived, moves size = " + moves.size());
-                dataset.clear();
-                dataset.addAll(moves);
-                notifyDataSetChanged();
-                notifyItemRangeChanged(0, dataset.size());
+                context.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "run ");
+                        dataset.clear();
+                        dataset.addAll(moves);
+                        notifyDataSetChanged();
+                        notifyItemRangeChanged(0, dataset.size());
+                    }
+                });
             }
         }.start(context, movesAvailable);
     }

@@ -1,32 +1,26 @@
-package lukasz.marczak.pl.gotta_catch_em_all.connection;
+package lukasz.marczak.pl.gotta_catch_em_all.download;
 
-import android.text.BoringLayout;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeAbilityDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeDetailDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeIdDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeMoveDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeTypeDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeAbility;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmAbility;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmMove;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;

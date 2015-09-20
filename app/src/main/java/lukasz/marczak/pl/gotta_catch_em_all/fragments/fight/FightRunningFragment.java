@@ -1,8 +1,10 @@
 package lukasz.marczak.pl.gotta_catch_em_all.fragments.fight;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,12 +20,16 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.tt.whorlviewlibrary.WhorlView;
 
+import java.io.File;
+import java.util.List;
+
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.MyPokesAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokeAttacksAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Randy;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeDetailDownloader;
@@ -33,11 +39,13 @@ import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Fightable;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 import lukasz.marczak.pl.gotta_catch_em_all.game.Engine;
+import lukasz.marczak.pl.gotta_catch_em_all.game.Player;
 
 
-public class FightRunningFragment extends Fragment implements Progressable {
+public class FightRunningFragment extends Fragment implements Fightable {
 
     final static String TAG = FightRunningFragment.class.getSimpleName();
     ImageView yourPokemon, opponentPokemon;
@@ -48,7 +56,7 @@ public class FightRunningFragment extends Fragment implements Progressable {
     ProgressBar opponentHP;
     ProgressBar yourPokeHP;
     TextView yourPokeNameTV;
-    TextView question;
+    TextView question, message;
 
     public static FightRunningFragment newInstance(String opponent) {
         FightRunningFragment fragment = new FightRunningFragment();
@@ -64,6 +72,32 @@ public class FightRunningFragment extends Fragment implements Progressable {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fetchPokemonDetails(opponentName);
+    }
+
+    private void fetchNewSelectedPokemonData(Fightable context, String pokemonName) {
+        Log.d(TAG, "fetchNewSelectedPokemonData ");
+        int yourPokeID = PokeUtils.getPokemonIdFromName(context.getActivity(), pokemonName);
+        Config.IDLE_STATE = true;
+        //check if pokemon has already downloaded moves
+        Realm realm = Realm.getInstance(context.getActivity());
+        realm.beginTransaction();
+        RealmPokeDetail detail = realm.where(RealmPokeDetail.class).equalTo("name", pokemonName, false).findFirst();
+        realm.commitTransaction();
+        if (detail == null) {
+            new PokeDetailDownloader() {
+                @Override
+                public void onDataReceived(PokeDetail detail) {
+                    Log.i(TAG, "onDataReceived " + detail.getName());
+                    Engine.INSTANCE.setYourPokeDetail(detail);
+                    Config.IDLE_STATE = false;
+                }
+            }.start(this, yourPokeID);
+        } else {
+            Log.d(TAG, "already downloaded data, return from database");
+            Engine.INSTANCE.setYourPokeDetail(DBManager.asPokeDetail(detail));
+            Config.IDLE_STATE = false;
+        }
+        Engine.INSTANCE.allowMoveOpponent(context);
     }
 
     private void fetchPokemonDetails(String opponentName) {
@@ -106,6 +140,7 @@ public class FightRunningFragment extends Fragment implements Progressable {
         TextView fight = (TextView) view.findViewById(R.id.fight);
         TextView bag = (TextView) view.findViewById(R.id.bag);
         TextView select = (TextView) view.findViewById(R.id.select_pokemon);
+        message = (TextView) view.findViewById(R.id.announce);
         TextView run = (TextView) view.findViewById(R.id.run);
         question = (TextView) view.findViewById(R.id.question);
         question.setText("What will \n " + PokeUtils.getPrettyPokemonName(MainActivity.pokeName) + "\n do?");
@@ -138,7 +173,6 @@ public class FightRunningFragment extends Fragment implements Progressable {
 
         Picasso.with(getActivity()).load(getOppponentPokemonResource()).into(opponentPokemon);
         Picasso.with(getActivity()).load(getYourPokemonResource()).into(yourPokemon);
-
         return view;
     }
 
@@ -155,57 +189,81 @@ public class FightRunningFragment extends Fragment implements Progressable {
                     }
                     case MotionEvent.ACTION_DOWN: {
                         Log.d(TAG, "action down");
-                        view.setBackgroundColor(Color.LTGRAY);
                         switch (mode) {
                             case 0: {
-                                Log.d(TAG, "onTouch select attack");
-                                new SelectMenuEngine.FIGHT(FightRunningFragment.this) {
+                                if (!Config.IDLE_STATE) {
+                                    view.setBackgroundColor(Color.LTGRAY);
 
-                                    @Override
-                                    public void onAttackChosen(int position) {
-                                        PokeMove move = PokeAttacksAdapter.dataset.get(position);
-                                        Log.d(TAG, "Player " + Engine.INSTANCE.getYourPoke().getName() + " used "
-                                                + move.getName() + "!!!");
-                                    }
+                                    Log.d(TAG, "onTouch select attack");
+                                    new SelectMenuEngine.FIGHT(FightRunningFragment.this) {
 
-                                    @Override
-                                    public PokeDetail getPokeDetail() {
-                                        return Engine.INSTANCE.getYourPoke().getDetail();
-                                    }
+                                        @Override
+                                        public void onAttackChosen(int position) {
+                                            final PokeMove move = PokeAttacksAdapter.dataset.get(position);
+                                            Log.d(TAG, "Player " + Engine.INSTANCE.getYourPoke().getName() + " used "
+                                                    + move.getName() + "!!!");
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    decreaseOpponent(move.getPower() / 3);
+                                                }
+                                            });
+                                            Engine.INSTANCE.allowMoveOpponent(FightRunningFragment.this);
+                                        }
 
-                                    @Override
-                                    public int getCurrentPokemonLevel() {
-                                        return Engine.INSTANCE.getYourPoke().getCurrentLevel();
-                                    }
-                                };
+                                        @Override
+                                        public PokeDetail getPokeDetail() {
+                                            Log.d(TAG, "getPokeDetail ");
+                                            return Engine.INSTANCE.getYourPoke().getDetail();
+                                        }
+
+                                        @Override
+                                        public int getCurrentPokemonLevel() {
+                                            Log.d(TAG, "getCurrentPokemonLevel ");
+                                            return Engine.INSTANCE.getYourPoke().getCurrentLevel();
+                                        }
+                                    };
+                                    break;
+                                }
+                            }
+                            case 1: {
+                                Log.d(TAG, "BAG not supported yet");
+                                view.setBackgroundColor(Color.LTGRAY);
+
                                 break;
                             }
                             case 2: {
-                                new SelectMenuEngine.POKEMON(getActivity()) {
-                                    @Override
-                                    public void onPokemonChosen(final int position) {
-                                        Log.d(TAG, "onPokemonChosen ");
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Log.d(TAG, "run ");
-                                                String newPokeName = MyPokesAdapter.dataset.get(position).getName();
-                                                String newPokeResource = PokeSpritesManager
-                                                        .getPokemonBackByName(newPokeName);
-                                                Picasso.with(getActivity()).load(newPokeResource).into(yourPokemon);
-                                                String prettyName = PokeUtils.getPrettyPokemonName(newPokeName);
-                                                yourPokeNameTV.setText(prettyName);
-                                                question.setText("What will \n" + prettyName + " do?");
-                                            }
-                                        });
-                                    }
-                                };
-                                break;
+                                if (!Config.IDLE_STATE) {
+                                    new SelectMenuEngine.POKEMON(getActivity()) {
+                                        @Override
+                                        public void onPokemonChosen(final int position) {
+                                            Log.d(TAG, "onPokemonChosen ");
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Log.d(TAG, "run ");
+                                                    String newPokeName = MyPokesAdapter.dataset.get(position).getName();
+                                                    String newPokeResource = PokeSpritesManager
+                                                            .getPokemonBackByName(newPokeName);
+                                                    Picasso.with(getActivity()).load(newPokeResource).into(yourPokemon);
+                                                    String prettyName = PokeUtils.getPrettyPokemonName(newPokeName);
+                                                    yourPokeNameTV.setText(prettyName);
+                                                    question.setText("What will \n" + prettyName + " do?");
+                                                    fetchNewSelectedPokemonData(FightRunningFragment.this, newPokeName);
+                                                }
+                                            });
+                                        }
+                                    };
+                                    view.setBackgroundColor(Color.LTGRAY);
+                                    break;
+                                }
                             }
                             case 3: {
-                                if (!strongPokemon) parentActivity.onBackPressed();
-                                else
-                                    Snackbar.make(getView(), "Cannot run this fight!", Snackbar.LENGTH_LONG).show();
+                                if (!Config.IDLE_STATE)
+                                    if (!strongPokemon) parentActivity.onBackPressed();
+                                    else
+                                        Snackbar.make(getView(), "Cannot run from this fight!", Snackbar.LENGTH_LONG).show();
+                                view.setBackgroundColor(Color.LTGRAY);
                                 break;
                             }
                             default:
@@ -259,5 +317,97 @@ public class FightRunningFragment extends Fragment implements Progressable {
             else if (!action.isShown())
                 action.stop();
         }
+    }
+
+    @Override
+    public void setText(CharSequence s) {
+        Log.d(TAG, "setText ");
+        message.setText(s);
+    }
+
+    @Override
+    public void decreasePoke(int i) {
+        Log.d(TAG, "decreasePoke " + i);
+        int total = Engine.INSTANCE.getYourPoke().getHp() - i;
+        Engine.INSTANCE.getYourPoke().setHp(total);
+        if (total < 0) {
+            switchToDeathPokeState();
+            total = 0;
+        }
+        yourPokeHP.setProgress(total);
+
+    }
+
+    boolean nothingWasClicked = true;
+
+    private void switchToDeathPokeState() {
+        Log.d(TAG, "switchToDeathPokeState ");
+        Config.deadPokemons.add(Engine.INSTANCE.getYourPoke().getName());
+        Snackbar.make(getView(), "Oops! Your " + Engine.INSTANCE.getYourPoke().getName() + " fainted. Continue? ", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick ");
+                nothingWasClicked = false;
+                new SelectMenuEngine.POKEMON(getActivity()) {
+                    @Override
+                    public void onPokemonChosen(int position) {
+                        Log.d(TAG, "onPokemonChosen " + position);
+                        String newPokeName = MyPokesAdapter.dataset.get(position).getName();
+                        if (contains(Config.deadPokemons, newPokeName)) {
+                            Log.i(TAG, "cannot choose this pokemon!!!");
+                            Snackbar.make(getView(), "This pokemon is fainted!!!", Snackbar.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String newPokeResource = PokeSpritesManager
+                                .getPokemonBackByName(newPokeName);
+                        Picasso.with(getActivity()).load(newPokeResource).into(yourPokemon);
+                        String prettyName = PokeUtils.getPrettyPokemonName(newPokeName);
+                        yourPokeNameTV.setText(prettyName);
+                        question.setText("What will \n" + prettyName + " do?");
+                        fetchNewSelectedPokemonData(FightRunningFragment.this, newPokeName);
+                    }
+                };
+            }
+        }).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (nothingWasClicked)
+                    getActivity().onBackPressed();
+            }
+        }, 5000);
+
+
+    }
+
+    private boolean contains(List<String> deadPokemons, String newPokeName) {
+        for (String s : deadPokemons) {
+            if (s.equals(newPokeName))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void decreaseOpponent(int i) {
+        Log.d(TAG, "decreaseOpponent " + i);
+        int total = Engine.INSTANCE.getOpponentPoke().getHp() - i;
+        Engine.INSTANCE.getOpponentPoke().setHp(total);
+        if (total < 0) {
+            switchToWinnerState();
+            total = 0;
+        }
+        opponentHP.setProgress(total);
+    }
+
+    private void switchToWinnerState() {
+        Log.d(TAG, "switchToWinnerState ");
+        Snackbar.make(getView(), "Congratulations! You have beaten " + opponentName, Snackbar.LENGTH_LONG).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().onBackPressed();
+            }
+        }, 4000);
     }
 }

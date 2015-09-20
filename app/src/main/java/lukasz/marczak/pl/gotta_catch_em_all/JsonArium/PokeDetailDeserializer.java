@@ -56,7 +56,7 @@ public class PokeDetailDeserializer implements JsonDeserializer<PokeDetail> {
                 String learnType = moves.get(x).getAsJsonObject().get("learn_type").getAsString();
                 if (learnType.equals("level up"))
                     moveId += "&" + moves.get(x).getAsJsonObject().get("level").getAsString();
-                moveS += moveId + "|";
+                moveS += moveId + ",";
             }
         if (types.size() > 0)
             for (int x = 0; x < types.size(); x++) {
@@ -99,39 +99,6 @@ public class PokeDetailDeserializer implements JsonDeserializer<PokeDetail> {
         String resourceUri = object.get("resource_uri").getAsString();
         String species = object.get("species").getAsString();
         String weight = object.get("weight").getAsString();
-
-//        Realm realm = Realm.getInstance(context);
-//        realm.beginTransaction();
-//        RealmPokeDetail detail = realm.createObject(RealmPokeDetail.class);
-//
-//        detail.setAttack(attack);
-//        detail.setCatchRate(catchRate);
-//        detail.setDefense(defense);
-//        detail.setDefense(defense);
-//        detail.setEggCycles(eggCycles);
-//        detail.setExp(exp);
-//        detail.setHappiness(happiness);
-//        detail.setHp(hp);
-//        detail.setNationalId(nationalId);
-//        detail.setPkdxId(pkdxId);
-//        detail.setSpAtk(spAtk);
-//        detail.setSpDef(spDef);
-//        detail.setSpeed(speed);
-//        detail.setTotal(total);
-//
-//        detail.setCreated(created);
-//        detail.setEvYield(evYield);
-//        detail.setGrowthRate(growthRate);
-//        detail.setHeight(height);
-//        detail.setMaleFemaleRatio(maleFemaleRatio);
-//        detail.setModified(modified);
-//        detail.setName(name);
-//        detail.setResourceUri(resourceUri);
-//        detail.setSpecies(species);
-//        detail.setWeight(weight);
-//
-//        realm.commitTransaction();
-//        realm.close();
 
         return new PokeDetail(attack, catchRate, defense, eggCycles, exp, happiness, hp, nationalId,
                 pkdxId, spAtk, spDef, speed, total, abilitieS, created, evYield, evolutionS, growthRate,

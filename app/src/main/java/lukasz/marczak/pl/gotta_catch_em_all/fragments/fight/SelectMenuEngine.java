@@ -88,18 +88,19 @@ public class SelectMenuEngine {
             selectAttackWindow.setContentView(R.layout.select_poke_window);
 
             TextView cancelButton = (TextView) selectAttackWindow.findViewById(R.id.cancel1);
+            TextView title1 = (TextView) selectAttackWindow.findViewById(R.id.title1);
             final RecyclerView attacksRecycler = (RecyclerView) selectAttackWindow.findViewById(R.id.recycler_view1);
             final ProgressBar bar = (ProgressBar) selectAttackWindow.findViewById(R.id.progressBarLayout1);
             attacksRecycler.setLayoutManager(new LinearLayoutManager(context.getActivity()));
-
+            title1.setText("Select attack");
             attacksRecycler.setAdapter(new PokeAttacksAdapter(context, getPokeDetail(), getCurrentPokemonLevel()) {
                 @Override
                 public void showProgressBar(boolean show) {
                     Log.d(TAG, "showProgressBar ");
-//                    int visbl = show ? View.VISIBLE : View.INVISIBLE;
-//                    int invisibl = !show ? View.VISIBLE : View.INVISIBLE;
-//                    bar.setVisibility(visbl);
-//                    attacksRecycler.setVisibility(invisibl);
+                    int visbl = show ? View.VISIBLE : View.INVISIBLE;
+                    int invisibl = !show ? View.VISIBLE : View.INVISIBLE;
+                    bar.setVisibility(visbl);
+                    attacksRecycler.setVisibility(invisibl);
                 }
 
                 @Override
@@ -108,8 +109,15 @@ public class SelectMenuEngine {
                 }
 
                 @Override
+                public void setText(CharSequence s) {
+
+                }
+
+
+                @Override
                 public void onItemClick(int postion) {
                     Log.d(TAG, "onItemClick " + postion);
+                    onAttackChosen(postion);
                     selectAttackWindow.dismiss();
                 }
             });

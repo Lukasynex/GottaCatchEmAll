@@ -1,4 +1,4 @@
-package lukasz.marczak.pl.gotta_catch_em_all.connection;
+package lukasz.marczak.pl.gotta_catch_em_all.download;
 
 import android.util.Log;
 
@@ -11,14 +11,13 @@ import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
-import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
-import rx.functions.Func2;
 
 /**
  * Created by Lukasz Marczak on 2015-09-13.

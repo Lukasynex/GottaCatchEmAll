@@ -1,6 +1,5 @@
-package lukasz.marczak.pl.gotta_catch_em_all.connection;
+package lukasz.marczak.pl.gotta_catch_em_all.download;
 
-import android.app.Activity;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
@@ -11,7 +10,8 @@ import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeTypeDeserializer;
-import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;

@@ -9,9 +9,10 @@
         layout="@layout/state_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/opponent_front"
         android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/opponent_front"
         android:layout_toStartOf="@+id/action" />
+
     <include
         android:id="@+id/your_pokemon_back_status"
         layout="@layout/state_bar"
@@ -19,34 +20,44 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/fight"
         android:layout_alignEnd="@+id/bag"
-        android:layout_toEndOf="@+id/action"
-        android:layout_alignStart="@+id/fight" />
+        android:layout_alignStart="@+id/fight"
+        android:layout_toEndOf="@+id/action" />
 
     <ImageView
         android:id="@+id/opponent_front"
         android:layout_width="150sp"
         android:layout_height="150sp"
-        android:layout_alignParentEnd="true"
-        android:layout_above="@+id/action" />
+        android:layout_above="@+id/action"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/announce"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/action"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="" />
+
     <com.tt.whorlviewlibrary.WhorlView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/action"
-        android:visibility="invisible"
         android:layout_width="1dp"
         android:layout_height="1dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:paddingTop="15sp"
+        android:visibility="invisible"
         app:whorlview_circle_colors="#F14336_#c0392b_#2980b9_#f39c12_#16a085"
         app:whorlview_circle_speed="270"
         app:whorlview_parallax="medium"
         app:whorlview_strokeWidth="6"
         app:whorlview_sweepAngle="90" />
     <!--<ProgressBar-->
-        <!--android:id="@+id/action"-->
-        <!--android:layout_width="100sp"-->
-        <!--android:layout_height="100sp"-->
-        <!--android:layout_above="@+id/your_pokemon_back"-->
-        <!--android:layout_centerHorizontal="true" />-->
+    <!--android:id="@+id/action"-->
+    <!--android:layout_width="100sp"-->
+    <!--android:layout_height="100sp"-->
+    <!--android:layout_above="@+id/your_pokemon_back"-->
+    <!--android:layout_centerHorizontal="true" />-->
 
     <ImageView
         android:id="@+id/your_pokemon_back"

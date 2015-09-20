@@ -26,16 +26,13 @@ import com.tt.whorlviewlibrary.WhorlView;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.AllDataDownloader;
+import lukasz.marczak.pl.gotta_catch_em_all.download.AllDataDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokeTypesFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RangeFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.TripFragment;
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Func1;
 
 
 public class MainActivity extends AppCompatActivity {

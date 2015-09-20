@@ -5,11 +5,9 @@ import android.app.Activity;
 /**
  * Created by Lukasz Marczak on 2015-09-20.
  */
-public interface Progressable {
+public interface Fightable extends Progressable{
 
-    void showProgressBar(boolean show);
+    void decreasePoke(int i);
 
-    Activity getActivity();
-
-    void setText(CharSequence s);
+    void decreaseOpponent(int i);
 }

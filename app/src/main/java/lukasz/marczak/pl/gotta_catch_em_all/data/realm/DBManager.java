@@ -3,6 +3,11 @@ package lukasz.marczak.pl.gotta_catch_em_all.data.realm;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import io.realm.Realm;
@@ -151,5 +156,47 @@ public class DBManager {
                 poke.getHp(), poke.getNationalId(), poke.getPkdxId(), poke.getSpAtk(), poke.getSpDef(), poke.getSpeed(), poke.getTotal(), poke.getAbilities(),
                 poke.getCreated(), poke.getEvYield(), poke.getEvolutions(), poke.getGrowthRate(), poke.getHeight(), poke.getMaleFemaleRatio(),
                 poke.getModified(), poke.getMoves(), poke.getName(), poke.getResourceUri(), poke.getSpecies(), poke.getTypes(), poke.getWeight());
+    }
+
+    public static List<Integer> extractMoves(String detailMoves) {
+        Log.d(TAG, "extractMoves ");
+        List<Integer> movesAvailable = new ArrayList<>();
+        String[] moves = detailMoves.split(",");
+        //every move that is on higher level is on schema: 12&3 means move 12 is available on 3 level or higher
+        for (int j = 0; j < moves.length; j++) {
+            String nextMove = moves[j];
+            if (nextMove.contains("&")) {
+                Log.d(TAG, "with level \'" + nextMove + "\'");
+                String[] moveAndLevel = nextMove.split("&");
+                int level = -1;
+                try {
+                    level = Integer.valueOf(moveAndLevel[1]);
+                } catch (NullPointerException | ArrayIndexOutOfBoundsException | NumberFormatException ex) {
+                    Log.i(TAG, "wrong argument here");
+                    level = -1;
+                } finally {
+                    if (level != -1) {
+                        movesAvailable.add(Integer.valueOf(moveAndLevel[0]));
+                    }
+                }
+            } else {
+                Log.d(TAG, "next move: " + nextMove);
+                int next = -1;
+                try {
+                    next = Integer.valueOf(nextMove);
+                } catch (NullPointerException | NumberFormatException ex) {
+                    Log.i(TAG, "wrong arg here");
+                    next = -1;
+                } finally {
+                    if (next != -1) {
+                        movesAvailable.add(next);
+                    }
+                }
+            }
+            Set<Integer> betterSet = new HashSet<>(movesAvailable);
+            movesAvailable.clear();
+            movesAvailable.addAll(betterSet);
+        }
+        return movesAvailable;
     }
 }

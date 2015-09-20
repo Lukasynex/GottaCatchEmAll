@@ -16,14 +16,10 @@ import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.TypesDownloader;
-import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.download.TypesDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokeTypesFragment;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.

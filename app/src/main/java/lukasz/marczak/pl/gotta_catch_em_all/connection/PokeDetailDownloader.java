@@ -3,13 +3,13 @@ package lukasz.marczak.pl.gotta_catch_em_all.connection;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
+
+import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeDetailDeserializer;
-import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.fight.FightRunningFragment;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.fight.StartFightFragment;
 import retrofit.RetrofitError;
 import rx.Observable;
 import rx.Subscriber;
@@ -27,6 +27,17 @@ public abstract class PokeDetailDownloader {
     public void start(final Progressable context, int pokeID) {
         Log.d(TAG, "start ");
 
+        Realm realm = Realm.getInstance(context.getActivity());
+        realm.beginTransaction();
+
+        RealmPokeDetail detail = realm.where(RealmPokeDetail.class).equalTo("pkdxId", pokeID).findFirst();
+        if (detail != null) {
+            realm.commitTransaction();
+            onDataReceived(DBManager.asPokeDetail(detail));
+            realm.close();
+            return;
+        }
+        realm.commitTransaction(); realm.close();
         final PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeDetail>() {
         }.getType(), PokeDetailDeserializer.getInstance(null)).getPokedexService();
 
@@ -73,14 +84,19 @@ public abstract class PokeDetailDownloader {
             }
 
             @Override
-            public void onNext(PokeDetail pokeDetail) {
+            public void onNext(final PokeDetail pokeDetail) {
                 if (pokeDetail == null) {
                     Log.e(TAG, "impossibru to got there");
                     return;
                 }
                 Log.d(TAG, "onNext : " + pokeDetail.getName());
                 DBManager.getInstance(context.getActivity()).savePokeDetail(pokeDetail);
-                onDataReceived(pokeDetail);
+               context.getActivity().runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+                       onDataReceived(pokeDetail);
+                   }
+               });
             }
         });
     }
