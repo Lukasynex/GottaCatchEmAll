@@ -1,5 +1,6 @@
 package lukasz.marczak.pl.gotta_catch_em_all.JsonArium;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonDeserializationContext;
@@ -18,12 +19,18 @@ import lukasz.marczak.pl.gotta_catch_em_all.data.PokeAbility;
 public class PokeAbilityDeserializer implements JsonDeserializer<PokeAbility> {
 
     public static final String TAG = PokeAbilityDeserializer.class.getSimpleName();
-    public static PokeAbilityDeserializer INSTANCE = new PokeAbilityDeserializer();
+    private static PokeAbilityDeserializer instance = new PokeAbilityDeserializer();
+    private static Context context;// = new PokeAbilityDeserializer();
+
+    public static PokeAbilityDeserializer getInstance(Context c) {
+        context = c;
+        return instance;
+    }
 
     @Override
-    public PokeAbility deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public PokeAbility deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext con) throws JsonParseException {
 
-        Log.d(TAG, "received json: " + json.toString());
+//        Log.d(TAG, "received json: " + json.toString());
         JsonObject obj = json.getAsJsonObject();
 
         int id = obj.get("id").getAsInt();
@@ -33,6 +40,18 @@ public class PokeAbilityDeserializer implements JsonDeserializer<PokeAbility> {
         String modified = obj.get("modified").getAsString();
         String description = obj.get("description").getAsString();
         String resourceUri = obj.get("resource_uri").getAsString();
+
+//        Realm realm = Realm.getInstance(context);
+//        realm.beginTransaction();
+//
+//        RealmAbility ability = realm.createObject(RealmAbility.class);
+//        ability.setCreated(created);
+//        ability.setName(name);
+//        ability.setModified(modified);
+//        ability.setDescription(description);
+//        ability.setResourceUri(resourceUri);
+//        realm.commitTransaction();
+//        realm.close();
 
         return new PokeAbility(id, name, created, modified, description, resourceUri);
     }

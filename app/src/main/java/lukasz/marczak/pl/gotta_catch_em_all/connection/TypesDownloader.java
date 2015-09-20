@@ -1,9 +1,11 @@
 package lukasz.marczak.pl.gotta_catch_em_all.connection;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +13,9 @@ import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeTypeDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokeTypesFragment;
 import retrofit.RetrofitError;
 import rx.Observable;
 import rx.Subscriber;
@@ -21,14 +25,12 @@ import rx.functions.Func1;
 /**
  * Created by Lukasz Marczak on 2015-09-18.
  */
-public class TypesDownloader {
-    public static final TypesDownloader INSTANCE = new TypesDownloader();
+public abstract class TypesDownloader {
     public static final String TAG = TypesDownloader.class.getSimpleName();
 
-    private TypesDownloader() {
-    }
+    public abstract void onDataReceived(List<PokeType> list);
 
-    public void start(final MainActivity context) {
+    public void start(final PokeTypesFragment context) {
         Log.d(TAG, "start ");
         List<Integer> types = new LinkedList<>();
         for (int j = 1; j < 19; j++) {
@@ -36,38 +38,36 @@ public class TypesDownloader {
         }
 
         final PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeType>() {
-        }.getType(), PokeTypeDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeTypeDeserializer.getInstance(context.getActivity())).getPokedexService();
 
         Observable.from(types).flatMap(new Func1<Integer, Observable<PokeType>>() {
             @Override
             public Observable<PokeType> call(Integer newType) {
                 return service.getPokemonType(newType);
             }
-        }).onErrorResumeNext(new Func1<Throwable, Observable<? extends PokeType>>() {
+        }).onErrorResumeNext(new Func1<Throwable, Observable<PokeType>>() {
             @Override
-            public Observable<? extends PokeType> call(Throwable throwable) {
+            public Observable<PokeType> call(Throwable throwable) {
                 Log.e(TAG, "error with");
                 if (throwable instanceof RetrofitError)
                     Log.e(TAG, "url = " + ((RetrofitError) throwable).getUrl());
-
                 return Observable.empty();
             }
-        })
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d(TAG, "show loader");
-                                context.showProgressBar(true);
-                            }
-                        });
-                    }
-                }).doOnCompleted(new Action0() {
+        }).doOnSubscribe(new Action0() {
             @Override
             public void call() {
-                context.runOnUiThread(new Runnable() {
+                context.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "show loader");
+                        context.showProgressBar(true);
+                    }
+                });
+            }
+        }).doOnCompleted(new Action0() {
+            @Override
+            public void call() {
+                context.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Log.d(TAG, "hide loader");
@@ -78,11 +78,20 @@ public class TypesDownloader {
         }).subscribe(new Subscriber<PokeType>() {
             @Override
             public void onCompleted() {
-                Realm realm = Realm.getInstance(context);
+                Realm realm = Realm.getInstance(context.getActivity());
+                realm.beginTransaction();
                 List<RealmType> list = realm.where(RealmType.class).findAllSorted("id", true);
+
                 for (RealmType t : list) {
                     Log.d(TAG, "type no. " + t.getId() + "," + t.getName());
                 }
+                List<PokeType> types =new ArrayList<PokeType>();
+                for(RealmType t : list){
+                    types.add(new PokeType(t.getId(),t.getName(),t.getWeakness(),t.getIneffective(),t.getSuperEffective()));
+                }
+                onDataReceived(types);
+                realm.commitTransaction();
+
                 SimpleRestAdapter.onCompleted(TAG, this);
             }
 
@@ -96,17 +105,7 @@ public class TypesDownloader {
                 if (pokeType == null)
                     return;
                 Log.d(TAG, "onNext " + pokeType.getId() + "," + pokeType.getName());
-                Realm realm = Realm.getInstance(context);
-                realm.beginTransaction();
-
-                RealmType type = realm.createObject(RealmType.class);
-                type.setId(pokeType.getId());
-                type.setName(pokeType.getName());
-                type.setWeakness(pokeType.getWeakness());
-                type.setIneffective(pokeType.getIneffective());
-                type.setSuperEffective(pokeType.getSuperEffective());
-                realm.commitTransaction();
-                realm.close();
+                DBManager.getInstance(context.getActivity()).savePokeType(pokeType);
             }
         });
     }

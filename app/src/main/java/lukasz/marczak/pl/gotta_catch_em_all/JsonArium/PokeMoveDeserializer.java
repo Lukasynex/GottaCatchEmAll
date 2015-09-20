@@ -31,7 +31,7 @@ public class PokeMoveDeserializer implements JsonDeserializer<PokeMove> {
     @Override
     public PokeMove deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext con) throws JsonParseException {
 
-        Log.d(TAG, "received json: " + json.toString());
+//        Log.d(TAG, "received json: " + json.toString());
         JsonObject obj = json.getAsJsonObject();
 
         int accuracy = obj.get("accuracy").getAsInt();
@@ -46,21 +46,23 @@ public class PokeMoveDeserializer implements JsonDeserializer<PokeMove> {
         String description = obj.get("description").getAsString();
         String resourceUri = obj.get("resource_uri").getAsString();
 
-        Realm realm = Realm.getInstance(context);
-        realm.beginTransaction();
-        RealmMove move = realm.createObject(RealmMove.class);
-        move.setId(id);
-        move.setPp(pp);
-        move.setName(name);
-        move.setPower(power);
-        move.setCreated(created);
-        move.setAccuracy(accuracy);
-        move.setCategory(category);
-        move.setModified(modified);
-        move.setDescription(description);
-        move.setResourceUri(resourceUri);
-        realm.commitTransaction();
-        realm.close();
+//        Realm realm = Realm.getInstance(context);
+//        realm.beginTransaction();
+//
+//        RealmMove move = realm.createObject(RealmMove.class);
+//        move.setId(id);
+//        move.setPp(pp);
+//        move.setName(name);
+//        move.setPower(power);
+//        move.setCreated(created);
+//        move.setAccuracy(accuracy);
+//        move.setCategory(category);
+//        move.setModified(modified);
+//        move.setDescription(description);
+//        move.setResourceUri(resourceUri);
+//
+//        realm.commitTransaction();
+//        realm.close();
         return new PokeMove(id, pp, power, accuracy, name,
                 created, category, modified, description, resourceUri);
     }

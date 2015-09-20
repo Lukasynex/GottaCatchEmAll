@@ -15,9 +15,9 @@ public class RealmType extends RealmObject {
     @PrimaryKey
     private int id;
     private String name;
-    private String ineffective     ;
-    private String superEffective  ;
-    private String weakness        ;
+    private String ineffective;
+    private String superEffective;
+    private String weakness;
 
     public RealmType() {
     }

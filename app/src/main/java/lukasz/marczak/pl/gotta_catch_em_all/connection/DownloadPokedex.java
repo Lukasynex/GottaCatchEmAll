@@ -49,7 +49,7 @@ public class DownloadPokedex {
         startMillis = System.currentTimeMillis();
 
         final PokeApi service = new SimpleRestAdapter(
-                PokeApi.POKEMON_API_ENDPOINT, new TypeToken<String>() {
+                PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeID>() {
         }.getType(), PokeNetNameDeserializer.INSTANCE).getPokedexService();
 
 
@@ -59,36 +59,31 @@ public class DownloadPokedex {
         }
 
 
-        Observable.from(all_150).flatMap(new Func1<Integer, Observable<String>>() {
+        Observable.from(all_150).flatMap(new Func1<Integer, Observable<PokeID>>() {
             @Override
-            public Observable<String> call(Integer integer) {
+            public Observable<PokeID> call(Integer integer) {
                 Log.d(TAG, "call ");
                 return service.getPokemonByID(integer);
             }
-        }, new Func2<Integer, String, NetPoke>() {
+        }).onErrorResumeNext(new Func1<Throwable, Observable<PokeID>>() {
             @Override
-            public NetPoke call(Integer id, String name) {
-                return new NetPoke(id, name);
-            }
-        }).onErrorResumeNext(new Func1<Throwable, Observable<NetPoke>>() {
-            @Override
-            public Observable<NetPoke> call(Throwable throwable) {
+            public Observable<PokeID> call(Throwable throwable) {
                 Log.d(TAG, "call empty realmPoke");
                 Log.d(TAG, throwable.getMessage());
                 Log.d(TAG, throwable.getCause().toString());
                 return Observable.empty();
             }
-        }).subscribe(new Subscriber<NetPoke>() {
+        }).subscribe(new Subscriber<PokeID>() {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "onCompleted in " + (System.currentTimeMillis() - startMillis));
                 Realm realm = Realm.getInstance(context);
                 realm.beginTransaction();
 
-                for (NetPoke netPoke : PokeUtils.netPokes) {
+                for (PokeID netPoke : PokeUtils.netPokes) {
                     RealmID poke = realm.createObject(RealmID.class); // Create a new object
                     poke.setName(netPoke.getName());
-                    poke.setId(netPoke.getID() - 1);
+                    poke.setId(netPoke.getId());
                 }
                 realm.commitTransaction();
 //                        realm.close();
@@ -108,8 +103,8 @@ public class DownloadPokedex {
             }
 
             @Override
-            public void onNext(NetPoke realPoke) {
-                Log.d(TAG, "onNext " + realPoke.getID());
+            public void onNext(PokeID realPoke) {
+                Log.d(TAG, "onNext " + realPoke.getId());
                 PokeUtils.netPokes.add(realPoke);
             }
         });

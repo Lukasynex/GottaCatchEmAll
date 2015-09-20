@@ -16,6 +16,22 @@ public class PokeMove {
     private String description;
     private String resourceUri;
 
+    @Override
+    public String toString() {
+        return "PokeMove{" +
+                "id=" + id +
+                ", pp=" + pp +
+                ", power=" + power +
+                ", accuracy=" + accuracy +
+                ", name='" + name + '\'' +
+                ", created='" + created + '\'' +
+                ", category='" + category + '\'' +
+                ", modified='" + modified + '\'' +
+                ", description='" + description + '\'' +
+                ", resourceUri='" + resourceUri + '\'' +
+                '}';
+    }
+
     public PokeMove(int id, int pp, int power, int accuracy, String name,
                     String created, String category, String modified,
                     String description, String resourceUri) {

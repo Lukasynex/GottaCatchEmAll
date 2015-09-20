@@ -1,8 +1,5 @@
 package lukasz.marczak.pl.gotta_catch_em_all.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Lukasz Marczak on 2015-09-18.
  */
@@ -59,5 +56,16 @@ public class PokeType {
 
     public void setSuperEffective(String superEffective) {
         this.superEffective = superEffective;
+    }
+
+    @Override
+    public String toString() {
+        return "PokeType{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", weakness='" + weakness + '\'' +
+                ", ineffective='" + ineffective + '\'' +
+                ", superEffective='" + superEffective + '\'' +
+                '}';
     }
 }

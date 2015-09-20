@@ -5,7 +5,6 @@ package lukasz.marczak.pl.gotta_catch_em_all.data;
  */
 public class PokeDetail {
 
-    private int id;
     private int attack;
     private int catchRate;
     private int defense;
@@ -22,7 +21,7 @@ public class PokeDetail {
 
     private String abilities;
     private String created;
-//    private String descriptions;
+    //    private String descriptions;
 //    private String eggGroups;
     private String evYield;
     private String evolutions;
@@ -34,9 +33,42 @@ public class PokeDetail {
     private String name;
     private String resourceUri;
     private String species;
-//    private String sprites;
+    //    private String sprites;
     private String types;
     private String weight;
+
+    @Override
+    public String toString() {
+        return "PokeDetail{" +
+                ", attack=" + attack +
+                ", catchRate=" + catchRate +
+                ", defense=" + defense +
+                ", eggCycles=" + eggCycles +
+                ", exp=" + exp +
+                ", happiness=" + happiness +
+                ", hp=" + hp +
+                ", nationalId=" + nationalId +
+                ", pkdxId=" + pkdxId +
+                ", spAtk=" + spAtk +
+                ", spDef=" + spDef +
+                ", speed=" + speed +
+                ", total=" + total +
+                ", abilities='" + abilities + '\'' +
+                ", created='" + created + '\'' +
+                ", evYield='" + evYield + '\'' +
+                ", evolutions='" + evolutions + '\'' +
+                ", growthRate='" + growthRate + '\'' +
+                ", height='" + height + '\'' +
+                ", maleFemaleRatio='" + maleFemaleRatio + '\'' +
+                ", modified='" + modified + '\'' +
+                ", moves='" + moves + '\'' +
+                ", name='" + name + '\'' +
+                ", resourceUri='" + resourceUri + '\'' +
+                ", species='" + species + '\'' +
+                ", types='" + types + '\'' +
+                ", weight='" + weight + '\'' +
+                '}';
+    }
 
     public PokeDetail(int attack, int catchRate, int defense, int eggCycles, int exp,
                       int happiness, int hp, int nationalId, int pkdxId, int spAtk, int spDef, int speed, int total, String abilities, String created, String evYield, String evolutions, String growthRate, String height, String maleFemaleRatio, String modified, String moves, String name, String resourceUri, String species, String types, String weight) {
@@ -68,13 +100,7 @@ public class PokeDetail {
         this.types = types;
         this.weight = weight;
     }
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
     public int getAttack() {
         return attack;
     }

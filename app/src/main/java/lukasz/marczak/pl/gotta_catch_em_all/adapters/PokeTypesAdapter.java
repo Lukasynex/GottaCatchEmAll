@@ -10,28 +10,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.TypesDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokeTypesFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
  */
-public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.ViewHolder> {
-    public static final String TAG = RealmPokeAdapter.class.getSimpleName();
-    private static List<NetPoke> dataset = new ArrayList<>();// = Collections.synchronizedList(new ArrayList<NetPoke>());
+public class PokeTypesAdapter extends RecyclerView.Adapter<PokeTypesAdapter.ViewHolder> {
+    public static final String TAG = PokeTypesAdapter.class.getSimpleName();
+    private List<PokeType> dataset = new ArrayList<>();// = Collections.synchronizedList(new ArrayList<NetPoke>());
     private Context context = null;
-    private RealmPokeFragment parent;
+    private PokeTypesFragment parent;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public View v;
@@ -48,43 +49,49 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         }
     }
 
-    public RealmPokeAdapter(RealmPokeFragment parent) {
+    public PokeTypesAdapter(final PokeTypesFragment parent) {
+        Log.d(TAG, "PokeTypesAdapter created");
         this.context = parent.getActivity();
         this.parent = parent;
-        List<RealmID> pokesUnSorted = Realm.getInstance(parent.getActivity()).where(RealmID.class)
-                .findAllSorted("id");
-        dataset.clear();
-        for (RealmID poke : pokesUnSorted) {
-//            if (!contains(dataset, poke))
-                dataset.add(new NetPoke(poke.getId(), poke.getName()));
+
+        Realm r = Realm.getInstance(parent.getActivity());
+        r.beginTransaction();
+        List<RealmType> types = r.where(RealmType.class).findAllSorted("id");
+        r.commitTransaction();
+
+        if (types != null && types.size() > 0) {
+            Log.d(TAG, "types are not null");
+            for (RealmType t : types) {
+                dataset.add(new PokeType(t.getId(), t.getName(), t.getWeakness(), t.getIneffective(), t.getSuperEffective()));
+            }
+            notifyDataSetChanged();
+            notifyItemRangeChanged(0, dataset.size());
+        } else {
+            Log.e(TAG, "types not yet fetched, downloading in progress...");
+            new TypesDownloader() {
+                @Override
+                public void onDataReceived(final List<PokeType> list) {
+                    Log.d(TAG, "onDataReceived ");
+                    parent.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dataset.addAll(list);
+                            notifyDataSetChanged();
+                            notifyItemRangeChanged(0, dataset.size());
+                        }
+                    });
+                }
+            }.start(parent);
         }
-//        Collections.sort(dataset, new Comparator<NetPoke>() {
-//            @Override
-//            public int compare(NetPoke lhs, NetPoke rhs) {
-//                return lhs.getID() < rhs.getID() ? -1 : 1;
-//            }
-//        });
-        //dataset = dataset.subList(1,dataset.size());
-
-    }
-
-    private boolean contains(List<NetPoke> dataset, RealmPokeDetail poke) {
-
-        for (NetPoke netPoke : dataset) {
-            if (netPoke.getName() .equals(poke.getName()))
-                return true;
-        }
-        return false;
     }
 
     @Override
-    public RealmPokeAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public PokeTypesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                           int viewType) {
         // create a new view
         View v = android.view.LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.net_poke_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
 
@@ -94,8 +101,9 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null) return;
 
-        NetPoke poke = dataset.get(position);
-        vh.id.setText(String.valueOf(poke.getID()));
+        //// TODO: 2015-09-20 customize layout !!!
+        final PokeType poke = dataset.get(position);
+        vh.id.setText(String.valueOf(poke.getId()));
         vh.name.setText(poke.getName());
         vh.dataParent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,10 +111,9 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
                 Log.d(TAG, "onClick " + position);
                 if (position < 0)
                     return;
-                NetPoke poke = dataset.get(position);
                 Log.i(TAG, "clicked item " + position);
                 Intent intent = new Intent(context, PokeInfoActivity.class);
-                intent.putExtra(PokeConstants.ID, poke.getID());
+                intent.putExtra(PokeConstants.ID, poke.getId());
                 intent.putExtra(PokeConstants.NAME, poke.getName());
                 context.startActivity(intent);
             }

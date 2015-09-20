@@ -74,4 +74,13 @@ public class SimpleRestAdapter {
         e.printStackTrace();
         onCompleted(tag, subscriber);
     }
+
+    public static void onError(String tag, Throwable throwable) {
+        Log.e(tag, "onError");
+        Log.e(tag, "caused by " + throwable.getCause());
+        Log.e(tag, "message: " + throwable.getMessage());
+        if (throwable instanceof RetrofitError)
+            Log.e(tag, "url = " + ((RetrofitError) throwable).getUrl());
+        throwable.printStackTrace();
+    }
 }

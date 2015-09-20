@@ -9,8 +9,22 @@
     tools:context="lukasz.marczak.pl.gotta_catch_em_all.activities.FightActivity">
 
     <RelativeLayout
+        android:id="@+id/dataParent3"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <com.tt.whorlviewlibrary.WhorlView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/progressBar_details"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:paddingTop="15sp"
+            app:whorlview_circle_colors="#F14336_#c0392b_#2980b9_#f39c12_#16a085"
+            app:whorlview_circle_speed="270"
+            app:whorlview_parallax="medium"
+            app:whorlview_strokeWidth="6"
+            app:whorlview_sweepAngle="90" />
 
         <ImageView
             android:id="@+id/pokemon_image"

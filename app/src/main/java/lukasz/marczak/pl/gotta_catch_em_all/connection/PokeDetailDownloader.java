@@ -37,7 +37,7 @@ public class PokeDetailDownloader {
         }
 
         final PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeDetail>() {
-        }.getType(), PokeDetailDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeDetailDeserializer.getInstance(null)).getPokedexService();
 
         Observable.from(pokemons).flatMap(new Func1<Integer, Observable<PokeDetail>>() {
             @Override

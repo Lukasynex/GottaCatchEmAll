@@ -14,6 +14,7 @@ public class RealmPokeDetail extends RealmObject {
     private int spAtk;
     private int spDef;
     private int speed;
+    @PrimaryKey
     private int pkdxId;
     private int attack;
     private int defense;
@@ -22,7 +23,6 @@ public class RealmPokeDetail extends RealmObject {
     private int happiness;
     private int nationalId;
 
-    @PrimaryKey
     private String name;
     private String moves;
     private String types;
@@ -40,7 +40,6 @@ public class RealmPokeDetail extends RealmObject {
     //    private String descriptions;
 //    private String eggGroups;
     //    private String sprites;
-
     public RealmPokeDetail() {
     }
 

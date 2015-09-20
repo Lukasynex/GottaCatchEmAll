@@ -6,7 +6,7 @@ package lukasz.marczak.pl.gotta_catch_em_all.configuration;
 public class Config {
 
     public static final int SCAN_TIME = 60;
-    public static String[] HEADERS = {"Trip", "Pokedex", "Range", "Options", "Stats", "All pokes",
+    public static String[] HEADERS = {"Trip", "Pokedex", "Range", "Options", "Stats", "All pokes","Types",
             "Exit"};
     public final static int MORE_POKES = 20;
     public final static int MAX_POKES = 150;
@@ -18,9 +18,11 @@ public class Config {
         int OPTIONS = 3;
         int STATS = 4;
         int ALL_POKEMONS = 5;
-        int EXIT = 6;
-        int START_FIGHT = 7;
-        int RUNNING_FIGHT = 8;
+        int ALL_POKEMON_TYPES = 6;
+
+        int EXIT = 7;
+        int START_FIGHT = 8;
+        int RUNNING_FIGHT = 9;
     }
 
     public static int CURRENT_FRAGMENT;

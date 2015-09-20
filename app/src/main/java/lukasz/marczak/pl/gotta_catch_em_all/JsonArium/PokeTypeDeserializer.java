@@ -12,9 +12,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
@@ -36,7 +34,7 @@ public class PokeTypeDeserializer implements JsonDeserializer<PokeType> {
     @Override
     public PokeType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext con) throws JsonParseException {
 
-        Log.d(TAG, "received json: " + json.toString());
+//        Log.d(TAG, "received json: " + json.toString());
         JsonObject obj = json.getAsJsonObject();
         int id = obj.get("id").getAsInt();
         String name = obj.get("name").getAsString();
@@ -59,16 +57,7 @@ public class PokeTypeDeserializer implements JsonDeserializer<PokeType> {
         if (weak_ness != null && weak_ness.size() > 0)
             for (int x = 0; x < weak_ness.size(); x++)
                 weak += weak_ness.get(x).getAsJsonObject().get("name").getAsString() + "|";
-        Realm realm = Realm.getInstance(context);
-        realm.beginTransaction();
-        RealmType realmType = realm.createObject(RealmType.class);
-        realmType.setId(id);
-        realmType.setName(name);
-        realmType.setIneffective(inEffective);
-        realmType.setSuperEffective(superEffective);
-        realmType.setWeakness(weak);
-        realm.commitTransaction();
-        realm.close();
+
         return new PokeType(id, name, weak, inEffective, superEffective);
     }
 }

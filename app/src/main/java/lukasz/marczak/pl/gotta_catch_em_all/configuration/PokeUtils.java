@@ -8,6 +8,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 
 /**
@@ -17,7 +18,7 @@ public final class PokeUtils {
     public static final String TAG = PokeUtils.class.getSimpleName();
 
 
-    public static List<NetPoke> netPokes = new ArrayList<>();
+    public static List<PokeID> netPokes = new ArrayList<>();
 
 
     public static String getPokeResByID(int ID) {
@@ -37,7 +38,7 @@ public final class PokeUtils {
     public static String getPokemonNameFromId(Context context, final int pokemonID) {
         Log.d(TAG, "getPokemonNameFromId " + pokemonID);
         RealmPokeDetail poke = Realm.getInstance(context)
-                .where(RealmPokeDetail.class).equalTo("id", String.valueOf(pokemonID), false).findFirst();
+                .where(RealmPokeDetail.class).equalTo("pkdxId", pokemonID).findFirst();
         if (poke != null) {
             Log.i(TAG, "found pokemon by id: " + poke.getName());
             return poke.getName();

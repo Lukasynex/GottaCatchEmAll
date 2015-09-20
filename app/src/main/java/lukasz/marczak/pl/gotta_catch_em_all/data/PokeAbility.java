@@ -13,6 +13,18 @@ public class PokeAbility {
     private String description;
     private String resourceUri;
 
+    @Override
+    public String toString() {
+        return "PokeAbility{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", created='" + created + '\'' +
+                ", modified='" + modified + '\'' +
+                ", description='" + description + '\'' +
+                ", resourceUri='" + resourceUri + '\'' +
+                '}';
+    }
+
     public PokeAbility(int id, String name, String created, String modified, String description, String resourceUri) {
         this.id = id;
         this.name = name;

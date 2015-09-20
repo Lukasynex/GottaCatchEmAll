@@ -12,6 +12,15 @@ public class TrainedPoke {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "TrainedPoke{" +
+                "name='" + name + '\'' +
+                ", maxHP=" + maxHP +
+                ", currentHP=" + currentHP +
+                '}';
+    }
+
     public String getName() {
         return name;
     }

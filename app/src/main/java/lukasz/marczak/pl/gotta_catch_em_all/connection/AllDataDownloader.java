@@ -1,16 +1,19 @@
 package lukasz.marczak.pl.gotta_catch_em_all.connection;
 
+import android.text.BoringLayout;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeAbilityDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeDetailDeserializer;
+import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeIdDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeMoveDeserializer;
-import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeNetNameDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeTypeDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeAbility;
@@ -18,10 +21,18 @@ import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmAbility;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmMove;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmType;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Lukasz Marczak on 2015-09-19.
@@ -29,138 +40,195 @@ import rx.functions.Func2;
 public class AllDataDownloader {
     public static final AllDataDownloader INSTANCE = new AllDataDownloader();
     public static final String TAG = AllDataDownloader.class.getSimpleName();
-
+    private static MainActivity context;
+    private static long millisStart;
     /**
      * services for download
      */
-    PokeApi serviceID;
     PokeApi serviceDetail;
+    PokeApi serviceID;
     PokeApi serviceAbility;
     PokeApi serviceType;
     PokeApi serviceMove;
 
-
     private AllDataDownloader() {
     }
 
-    public void setupServices(final MainActivity context) {
+    public AllDataDownloader setupServices(final MainActivity _context) {
         Log.d(TAG, "start ");
-        serviceID = new SimpleRestAdapter(
-                PokeApi.POKEMON_API_ENDPOINT, new TypeToken<String>() {
-        }.getType(), PokeNetNameDeserializer.INSTANCE).getPokedexService();
+        context = _context;
+
+//        typeRealm = Realm.getInstance(context);
+//        abilityRealm = Realm.getInstance(context);
+//        detailRealm = Realm.getInstance(context);
+//        moveRealm = Realm.getInstance(context);
+
+//        typeRealm.beginTransaction();
+
 
         serviceDetail = new SimpleRestAdapter(
                 PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeDetail>() {
-        }.getType(), PokeDetailDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeDetailDeserializer.getInstance(context)).getPokedexService();
+
+        serviceID = new SimpleRestAdapter(
+                PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeID>() {
+        }.getType(), PokeIdDeserializer.getInstance(context)).getPokedexService();
 
         serviceAbility = new SimpleRestAdapter(
                 PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeAbility>() {
-        }.getType(), PokeAbilityDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeAbilityDeserializer.getInstance(context)).getPokedexService();
 
         serviceType = new SimpleRestAdapter(
                 PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeType>() {
-        }.getType(), PokeTypeDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeTypeDeserializer.getInstance(context)).getPokedexService();
 
         serviceMove = new SimpleRestAdapter(
                 PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeMove>() {
         }.getType(), PokeMoveDeserializer.getInstance(context)).getPokedexService();
+        return this;
     }
 
     public void downloadData(final MainActivity context) {
         Log.d(TAG, "downloadData ");
 
         List<Integer> moves = new LinkedList<>();
+        List<Integer> types = new LinkedList<>();
+        List<Integer> abilities = new LinkedList<>();
+        List<Integer> details = new LinkedList<>();
+        for (int j = 1; j <= PokeApi.TYPES_COUNT; j++) types.add(j);
+        for (int j = 1; j <= PokeApi.ABILITIES_COUNT; j++) abilities.add(j);
         for (int j = 1; j <= PokeApi.MOVES_COUNT; j++) moves.add(j);
-        /**download data(explaination)
+        for (int j = 1; j <= 151/*PokeApi.POKEMONS_COUNT*/; j++) details.add(j);
+        /**download data(explaination) O<T> means Observable<T>
 
          FILTER                                          FILTER                                  FILTER
-         1 -> Observable<PokeMove> ->  1, PokeMove  ->  1, Observable<PokeDetail> -> PokeDetail -> Observable<PokeAbility> -> PokeAbility -> Observable<PokeType> PokeType
-         2 -> Observable<PokeMove> ->  1, PokeMove  ->  1, Observable<PokeDetail> -> PokeDetail -> Observable<PokeAbility> -> PokeAbility -> Observable<PokeType> PokeType
-         3 -> Observable<PokeMove> ->  1, PokeMove  ->  1, Observable<PokeDetail> -> PokeDetail -> Observable<PokeAbility> -> PokeAbility -> Observable<PokeType> PokeType
+         1 -> O<PokeMove> ->  1, PokeMove  ->  1, O<PokeDetail> -> PokeDetail -> O<PokeAbility> -> PokeAbility ->1, O<PokeType> PokeType
+         2 -> O<PokeMove> ->  1, PokeMove  ->  1, O<PokeDetail> -> PokeDetail -> O<PokeAbility> -> PokeAbility ->2, O<PokeType> PokeType
+         3 -> O<PokeMove> ->  1, PokeMove  ->  1, O<PokeDetail> -> PokeDetail -> O<PokeAbility> -> PokeAbility ->3, O<PokeType> PokeType
          .
          .
-         626->Observable<PokeMove> ->626, PokeMove  ->493, Observable<PokeDetail> -> PokeDetail -> Observable<PokeAbility> -> PokeAbility -> Observable<PokeType> PokeType
+         626->O <PokeMove> ->626, PokeMove  ->493,O<PokeDetail> -> PokeDetail -> O<PokeAbility> -> PokeAbility->18, O<PokeType> PokeType
 
          */
-        Observable.from(moves).flatMap(new Func1<Integer, Observable<PokeMove>>() {
+        rx.Observable<Boolean> pokeMoves =
+                Observable.from(moves).flatMap(new Func1<Integer, Observable<PokeMove>>() {
+                    @Override
+                    public Observable<PokeMove> call(Integer id) {
+                        Log.d(TAG, "fetching " + id + " of 626 moves...");
+                        return serviceMove.getPokemonMove(id);
+                    }
+                }).map(new Func1<PokeMove, Boolean>() {
+                    @Override
+                    public Boolean call(PokeMove pokeMove) {
+                        DBManager.getInstance(context).savePokeMove(pokeMove);
+                        return true;
+                    }
+                });
+        rx.Observable<Boolean> pokeDetails =
+                Observable.from(details).flatMap(new Func1<Integer, Observable<PokeDetail>>() {
+                    @Override
+                    public Observable<PokeDetail> call(Integer id) {
+                        Log.d(TAG, "call observable<" + id + ">");
+                        return serviceDetail.getPokemonDetail(id);
+                    }
+                }).map(new Func1<PokeDetail, Boolean>() {
+                    @Override
+                    public Boolean call(PokeDetail pokeDetail) {
+                        DBManager.getInstance(context).savePokeDetail(pokeDetail);
+                        return true;
+                    }
+                });
+        rx.Observable<Boolean> pokeIDs =
+                Observable.from(details).flatMap(new Func1<Integer, Observable<PokeID>>() {
+                    @Override
+                    public Observable<PokeID> call(Integer id) {
+                        Log.d(TAG, "call observable<" + id + ">");
+                        return serviceID.getPokemonByID(id);
+                    }
+                }).map(new Func1<PokeID, Boolean>() {
+                    @Override
+                    public Boolean call(PokeID poke) {
+                        DBManager.getInstance(context).savePokeID(poke);
+                        return true;
+                    }
+                });
+
+
+        rx.Observable<Boolean> pokeAbilities =
+                Observable.from(abilities).flatMap(new Func1<Integer, Observable<PokeAbility>>() {
+                    @Override
+                    public Observable<PokeAbility> call(Integer id) {
+                        return serviceAbility.getPokemonAbility(id);
+                    }
+                }).map(new Func1<PokeAbility, Boolean>() {
+                    @Override
+                    public Boolean call(PokeAbility pokeAbility) {
+                        DBManager.getInstance(context).savePokeAbility(pokeAbility);
+                        return true;
+                    }
+                });
+
+
+
+        pokeIDs.doOnSubscribe(new Action0() {
             @Override
-            public Observable<PokeMove> call(Integer id) {
-                Log.d(TAG, "fetching 626 moves...");
-                return serviceMove.getPokemonMove(id);
+            public void call() {
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        millisStart = System.currentTimeMillis();
+                        context.showProgressBar(true);
+                    }
+                });
             }
-        }).map(new Func1<PokeMove, PokeMove>() {
+        }).doOnCompleted(new Action0() {
             @Override
-            public PokeMove call(PokeMove pokeMove) {
-                //save PokeMove in DB
-                return pokeMove;
+            public void call() {
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "time elapsed: " + (System.currentTimeMillis() - millisStart) + " ms");
+                        context.showProgressBar(false);
+                    }
+                });
             }
-        }).filter(new Func1<PokeMove, Boolean>() {
-            @Override
-            public Boolean call(PokeMove pokeMove) {
-                return pokeMove.getId() <= PokeApi.POKEMONS_COUNT;
-            }
-        }).flatMap(new Func1<PokeMove, Observable<PokeDetail>>() {
-            @Override
-            public Observable<PokeDetail> call(PokeMove pokeMove) {
-                Log.d(TAG, "fetching 493 pokemon IDs...");
-                //saved PokeMove in DB
-                return serviceDetail.getPokemonDetail(pokeMove.getId());
-            }
-        }, new Func2<PokeMove, PokeDetail, PokeDetail>() {
-            @Override
-            public PokeDetail call(PokeMove pokeMove, PokeDetail pokeDetail) {
-                pokeDetail.setId(pokeMove.getId());
-                return pokeDetail;
-            }
-        }).map(new Func1<PokeDetail, PokeDetail>() {
-            @Override
-            public PokeDetail call(PokeDetail pokeDetail) {
-                //saved PokeDetail in DB
-                return pokeDetail;
-            }
-        }).filter(new Func1<PokeDetail, Boolean>() {
-            @Override
-            public Boolean call(PokeDetail pokeDetail) {
-                Log.d(TAG, "filtering : limit to " + PokeApi.ABILITIES_COUNT + " pokemon abilities");
-                return pokeDetail.getId() <= PokeApi.ABILITIES_COUNT;
-            }
-        }).flatMap(new Func1<PokeDetail, Observable<PokeAbility>>() {
-            @Override
-            public Observable<PokeAbility> call(PokeDetail pokeDetail) {
-                return serviceAbility.getPokemonAbility(pokeDetail.getId());
-            }
-        }).map(new Func1<PokeAbility, PokeAbility>() {
-            @Override
-            public PokeAbility call(PokeAbility pokeAbility) {
-                //saved PokeAbility in DB
-                return pokeAbility;
-            }
-        }).filter(new Func1<PokeAbility, Boolean>() {
-            @Override
-            public Boolean call(PokeAbility pokeAbility) {
-                Log.d(TAG, "filtering : limit to " + PokeApi.TYPES_COUNT + " pokemon types");
-                return pokeAbility.getId() <= PokeApi.TYPES_COUNT;
-            }
-        }).flatMap(new Func1<PokeAbility, Observable<PokeType>>() {
-            @Override
-            public Observable<PokeType> call(PokeAbility pokeAbility) {
-                return serviceType.getPokemonType(pokeAbility.getId());
-            }
-        }).subscribe(new Subscriber<PokeType>() {
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(new Func1<Throwable, Observable<Boolean>>() {
+                    @Override
+                    public Observable<Boolean> call(Throwable throwable) {
+                        SimpleRestAdapter.onError(TAG, throwable);
+                        return Observable.empty();
+                    }
+                }).subscribe(new Subscriber<Boolean>() {
             @Override
             public void onCompleted() {
+                Log.d(TAG, "onCompleted ");
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "time elapsed: " + (System.currentTimeMillis() - millisStart) + " ms");
+                        context.showProgressBar(false);
+                    }
+                });
                 SimpleRestAdapter.onCompleted(TAG, this);
             }
 
             @Override
             public void onError(Throwable e) {
-                SimpleRestAdapter.onErrorCompleted(TAG, this, e);
+//            SimpleRestAdapter.onErrorCompleted(TAG,this,e);
+                SimpleRestAdapter.onError(TAG, e);
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "time elapsed: " + (System.currentTimeMillis() - millisStart) + " ms");
+                        context.showProgressBar(false);
+                    }
+                });
             }
-
             @Override
-            public void onNext(PokeType pokeType) {
-                Log.d(TAG, "onNext " + pokeType.getName());
-                //saved PokeType in DB
+            public void onNext(Boolean aBoolean) {
+                Log.d(TAG, "onNext ");
             }
         });
     }

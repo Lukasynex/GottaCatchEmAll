@@ -5,6 +5,7 @@ import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Lukasz Marczak on 2015-09-13.
+ * Represents single move of pokemon, see example Json here: http://pokeapi.co/api/v1/move/153/
  */
 public class RealmMove extends RealmObject {
     @PrimaryKey

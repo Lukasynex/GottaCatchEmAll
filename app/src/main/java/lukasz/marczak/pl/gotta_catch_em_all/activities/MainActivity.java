@@ -21,22 +21,21 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.tt.whorlviewlibrary.WhorlView;
+
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.connection.TypesDownloader;
+import lukasz.marczak.pl.gotta_catch_em_all.connection.AllDataDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokeTypesFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RangeFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.TripFragment;
 import rx.Observable;
 import rx.Observer;
-import rx.android.app.AppObservable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -68,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         progressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
         main = (FrameLayout) findViewById(R.id.content_frame);
-
+        WhorlView whorl = (WhorlView) findViewById(R.id.progressBar_main);
+        whorl.start();
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
@@ -111,15 +111,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "isFirstLaunch : " + isFirstLaunch);
         if (isFirstLaunch) {
             AppFirstLauncher.INSTANCE.setup(this);
-            downloadPokedex();
-            downloadPokeTypes();
+            downloadAllData();
         }
     }
 
-    private void downloadPokeTypes() {
-        Log.d(TAG, "downloadPokeTypes ");
-        TypesDownloader.INSTANCE.start(this);
-    }
 
     private rx.Subscription downloadSubscription;
 
@@ -131,70 +126,13 @@ public class MainActivity extends AppCompatActivity {
         main.setVisibility(inv);
     }
 
-    private void downloadPokedex() {
+    private void downloadAllData() {
         Log.d(TAG, "download Pokedex ");
-        showProgressBar(true);
-        downloadSubscription = AppObservable.
-                bindActivity(this, _getDownloadPokedexObservable())
-                .subscribeOn(Schedulers.computation())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showProgressBar(true);
-                            }
-                        });
-                    }
-                }).doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showProgressBar(false);
-                            }
-                        });
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(_getDummyObserver());
-    }
-
-    private Observable<Boolean> _getDownloadPokedexObservable() {
-        return Observable.just(true).map(new Func1<Boolean, Boolean>() {
-            @Override
-            public Boolean call(Boolean aBoolean) {
-                Log.d(TAG, "Downloading data for draggable list in thread");
-//                DownloadPokedex.INSTANCE.start(MainActivity.this);
-                return aBoolean;
-            }
-        });
-    }
-
-    private Observer<Boolean> _getDummyObserver() {
-        return new Observer<Boolean>() {
-
-            @Override
-            public void onCompleted() {
-                Log.d(TAG, "onCompleted download stopnearby");
-                if (downloadSubscription != null && !downloadSubscription.isUnsubscribed())
-                    downloadSubscription.unsubscribe();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG, "onError ");
-                Log.e(TAG, "cause " + e.getCause());
-                Log.e(TAG, "message " + e.getMessage());
-            }
-
-            @Override
-            public void onNext(Boolean bool) {
-                Log.d(TAG, "onNext download stopnearby " + bool);
-            }
-        };
+//        showProgressBar(true);
+//        downloadSubscription = AppObservable.
+//                bindActivity(this, _getDownloadPokedexObservable())
+//                .subscribe(_getDummyObserver());
+        AllDataDownloader.INSTANCE.setupServices(this).downloadData(this);
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -301,6 +239,10 @@ public class MainActivity extends AppCompatActivity {
             case Config.FRAGMENT.ALL_POKEMONS:
                 Log.v(TAG, "switchToFragment - POKEDEX");
                 fragment = RealmPokeFragment.newInstance();
+                break;
+            case Config.FRAGMENT.ALL_POKEMON_TYPES:
+                Log.v(TAG, "switchToFragment - POKEDEX");
+                fragment = PokeTypesFragment.newInstance();
                 break;
 //            case Config.FRAGMENT_SETTINGS:
 //                Log.v(TAG, "switchToFragment - settings");

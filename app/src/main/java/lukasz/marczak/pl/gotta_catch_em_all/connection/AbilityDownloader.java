@@ -37,7 +37,7 @@ public class AbilityDownloader {
         }
 
         final PokeApi service = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeMove>() {
-        }.getType(), PokeAbilityDeserializer.INSTANCE).getPokedexService();
+        }.getType(), PokeAbilityDeserializer.getInstance(null)).getPokedexService();
 
         Observable.from(ability).flatMap(new Func1<Integer, Observable<PokeAbility>>() {
             @Override

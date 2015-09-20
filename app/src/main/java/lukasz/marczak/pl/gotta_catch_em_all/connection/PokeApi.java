@@ -22,8 +22,8 @@ public interface PokeApi {
     @GET("/api/v1/sprite/{id}")
     rx.Observable<Response> getPokemonNameByID(@Path("id") Integer id);
 
-    @GET("/api/v1/sprite/{id}")
-    rx.Observable<String> getPokemonByID(@Path("id") Integer id);
+    @GET("/api/v1/pokemon/{id}")
+    rx.Observable<PokeID> getPokemonByID(@Path("id") Integer id);
 
     //718 pokemons available, but we download only 493 due to limited sprites available
     @GET("/api/v1/pokemon/{id}/")

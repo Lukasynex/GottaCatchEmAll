@@ -56,7 +56,7 @@ public class StartFightFragment extends Fragment {
         }
         Log.d(TAG, "onCreate ");
         RealmPokeDetail poke = Realm.getInstance(getActivity()).where(RealmPokeDetail.class)
-                .equalTo("id", String.valueOf(pokemonID), false).findFirst();
+                .equalTo("pkdxId", String.valueOf(pokemonID), false).findFirst();
         pokemonName = poke.getName();
 //        String image = PokeUtils.getPokeResByID(pokemonID);
     }

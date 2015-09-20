@@ -6,12 +6,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
+import com.tt.whorlviewlibrary.WhorlView;
 
+import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.JsonArium.PokeDetailDeserializer;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
@@ -21,8 +26,12 @@ import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeApi;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.SimpleRestAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import rx.Subscriber;
+import rx.functions.Action0;
 
 public class PokeInfoActivity extends AppCompatActivity {
 
@@ -31,6 +40,8 @@ public class PokeInfoActivity extends AppCompatActivity {
     private TextView name;
     private TextView description;
     private ImageView image;
+    private RelativeLayout mainLayout;
+    private WhorlView progressBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +52,13 @@ public class PokeInfoActivity extends AppCompatActivity {
         Intent data = getIntent();
         if (data != null) {
             int p_id = data.getIntExtra(PokeConstants.ID, 26);
+            String p_name = data.getStringExtra(PokeConstants.NAME);
 
             name.setText("");
             id.setText("");
 
-            String url = PokeSpritesManager.getMainPokeByName(PokeUtils.getPokemonNameFromId(this, p_id));
+            String url = PokeSpritesManager.getMainPokeByName(p_name
+                    /*PokeUtils.getPokemonNameFromId(this, p_id)*/);
             Picasso.with(this).load(url).into(image);
             setupDetails(p_id);
         }
@@ -56,34 +69,88 @@ public class PokeInfoActivity extends AppCompatActivity {
 
     private void setupDetails(int _id) {
         Log.d(TAG, "setupDetails ");
-        SimpleRestAdapter adapter = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT,
-                new TypeToken<PokeMove>() {
-                }.getType(), PokeDetailDeserializer.INSTANCE);
-        PokeApi service = adapter.getPokedexService();
-        service.getPokemonDetail(_id).subscribe(new Subscriber<PokeMove>() {
-            @Override
-            public void onCompleted() {
-                Log.d(TAG, "onCompleted ");
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "onError ");
-            }
+        Realm realm = Realm.getInstance(this);
+        realm.beginTransaction();
 
-            @Override
-            public void onNext(final PokeMove pokeDetail) {
-                Log.d(TAG, "onNext ");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        description.setText(pokeDetail.toString());
-                        name.setText(pokeDetail.getName());
-                        id.setText("#" + pokeDetail.getId());
-                    }
-                });
-            }
-        });
+        RealmPokeDetail pokeDetail = realm.where(RealmPokeDetail.class).equalTo("pkdxId", _id).findFirst();
+        realm.commitTransaction();
+        if (pokeDetail != null) {
+            Log.i(TAG, "pokemon detail already exists, showing details");
+            description.setText(pokeDetail.toString());
+            name.setText(pokeDetail.getName());
+            id.setText("#" + pokeDetail.getPkdxId());
+            showProgressLayout(false);
+        } else {
+            Log.e(TAG, "database does not contain this pokemon! fetching info from json...");
+            final PokeApi pokeApi = new SimpleRestAdapter(PokeApi.POKEMON_API_ENDPOINT, new TypeToken<PokeDetail>() {
+            }.getType(), PokeDetailDeserializer.getInstance(this)).getPokedexService();
+
+            pokeApi.getPokemonDetail(_id)
+                    .doOnSubscribe(new Action0() {
+                        @Override
+                        public void call() {
+                            Log.d(TAG, "doOnSubscribe");
+                        }
+                    })
+                    .doOnCompleted(new Action0() {
+                        @Override
+                        public void call() {
+                            Log.d(TAG, "doOnCompleted");
+                            PokeInfoActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showProgressLayout(false);
+                                }
+                            });
+                        }
+                    })
+                    .subscribe(new Subscriber<PokeDetail>() {
+                        @Override
+                        public void onCompleted() {
+                            PokeInfoActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showProgressLayout(false);
+                                }
+                            });
+                            SimpleRestAdapter.onCompleted(TAG, this);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            PokeInfoActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showProgressLayout(false);
+                                }
+                            });
+                            SimpleRestAdapter.onErrorCompleted(TAG, this, e);
+                        }
+
+                        @Override
+                        public void onNext(final PokeDetail pokeDetail) {
+                            Log.d(TAG, "onNext " + pokeDetail);
+                            PokeInfoActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    description.setText(pokeDetail.toString());
+                                    name.setText(pokeDetail.getName());
+                                    id.setText("#" + pokeDetail.getPkdxId());
+                                }
+                            });
+                            DBManager.getInstance(PokeInfoActivity.this).savePokeDetail(pokeDetail);
+                        }
+                    });
+        }
+    }
+
+    private void showProgressLayout(boolean show) {
+        Log.d(TAG, "showProgressLayout " + show);
+        int showMain = !show ? View.VISIBLE : View.GONE;
+        int showProgress = show ? View.VISIBLE : View.GONE;
+        mainLayout.setVisibility(showMain);
+        progressBarLayout.setVisibility(showProgress);
     }
 
     private void injectViews() {
@@ -92,6 +159,10 @@ public class PokeInfoActivity extends AppCompatActivity {
         name = (TextView) findViewById(R.id.pokemon_name);
         description = (TextView) findViewById(R.id.pokemon_description);
         image = (ImageView) findViewById(R.id.pokemon_image);
+        mainLayout = (RelativeLayout) findViewById(R.id.dataParent3);
+        progressBarLayout = (WhorlView) findViewById(R.id.progressBar_details);
+        progressBarLayout.start();
+        showProgressLayout(true);
     }
 
     @Override
@@ -135,27 +206,6 @@ public class PokeInfoActivity extends AppCompatActivity {
             }
         }
     }
-
-//    public void switchToFragment(int fragmentId) {
-//        Fragment fragment;
-//        switch (fragmentId) {
-//            case Config.FRAGMENT.START_FIGHT:
-//                fragment = StartFightFragment.newInstance(
-//                        PokeUtils.getRandomPokemonID());
-//                break;
-//            case Config.FRAGMENT.RUNNING_FIGHT:
-//                fragment = FightRunningFragment.newInstance();
-//                break;
-//            default:
-//                fragment = StartFightFragment.newInstance(PokeUtils.getRandomPokemonID());
-//        }
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .setCustomAnimations(R.anim.fab_in, R.anim.fab_out, R.anim.fab_in, R.anim.fab_out)
-//                .replace(R.id.content_frame, fragment)
-//                .commit();
-//    }
-
 
     @Override
     public void onBackPressed() {
