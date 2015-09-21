@@ -299,4 +299,10 @@ public class MainActivity extends AppCompatActivity {
             selectItem(0);
         else super.onBackPressed();
     }
+
+    public void setActionBarTitle(String s) {
+        Log.d(TAG, "setActionBarTitle " + s);
+        if (getSupportActionBar() != null) setTitle(s);
+        else Log.e(TAG, "action bar is null!!!");
+    }
 }

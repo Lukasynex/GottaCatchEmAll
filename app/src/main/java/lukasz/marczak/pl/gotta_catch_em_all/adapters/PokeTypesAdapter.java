@@ -15,6 +15,7 @@ import java.util.List;
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
+import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeTypeActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
 import lukasz.marczak.pl.gotta_catch_em_all.download.TypesDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeType;
@@ -93,7 +94,7 @@ public class PokeTypesAdapter extends RecyclerView.Adapter<PokeTypesAdapter.View
 
     @Override
     public void onBindViewHolder(final ViewHolder vh, final int position) {
-        Log.d(TAG, "onBindViewHolder");
+        Log.d(TAG, "binding [" + position + "]");
         if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null) return;
 
@@ -108,9 +109,8 @@ public class PokeTypesAdapter extends RecyclerView.Adapter<PokeTypesAdapter.View
                 if (position < 0)
                     return;
                 Log.i(TAG, "clicked item " + position);
-                Intent intent = new Intent(context, PokeInfoActivity.class);
+                Intent intent = new Intent(context, PokeTypeActivity.class);
                 intent.putExtra(PokeConstants.ID, poke.getId());
-                intent.putExtra(PokeConstants.NAME, poke.getName());
                 context.startActivity(intent);
             }
         });

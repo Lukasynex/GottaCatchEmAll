@@ -27,13 +27,17 @@
             android:label="@string/title_activity_pokemon_info" />
         <activity
             android:name=".activities.SplashActivity"
-            android:noHistory="true"
-            android:label="@string/title_activity_splash" >
+            android:label="@string/title_activity_splash"
+            android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.PokeTypeActivity"
+            android:label="@string/title_activity_poke_type" >
         </activity>
     </application>
 

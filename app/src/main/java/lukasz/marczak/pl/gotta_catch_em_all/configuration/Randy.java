@@ -19,8 +19,4 @@ public class Randy {
     public static boolean randomAnswer() {
         return generator.nextBoolean();
     }
-
-    public static Attack getRandomAttackFor(String opponentName) {
-        return null;
-    }
 }

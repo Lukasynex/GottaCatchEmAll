@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.tt.whorlviewlibrary.WhorlView;
 
 import lukasz.marczak.pl.gotta_catch_em_all.R;
+import lukasz.marczak.pl.gotta_catch_em_all.activities.MainActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokeTypesAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.RealmPokeAdapter;
 
@@ -44,6 +45,7 @@ public class PokeTypesFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.d(TAG, "onCreateView ");
         View view = inflater.inflate(R.layout.fragment_pokedex, container, false);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         progressBar = (WhorlView) view.findViewById(R.id.whorlView);
         progressBar.setVisibility(View.GONE);
@@ -57,6 +59,7 @@ public class PokeTypesFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "onViewCreated()");
+        ((MainActivity) getActivity()).setActionBarTitle("Pokemon types");
     }
 
     @Override
@@ -72,9 +75,9 @@ public class PokeTypesFragment extends Fragment {
     public void showProgressBar(boolean show) {
         int visibility = show ? View.VISIBLE : View.GONE;
         progressBar.setVisibility(visibility);
-        if(!progressBar.isCircling())
+        if (!progressBar.isCircling())
             progressBar.start();
-        else if(!progressBar.isShown())
+        else if (!progressBar.isShown())
             progressBar.stop();
     }
 }

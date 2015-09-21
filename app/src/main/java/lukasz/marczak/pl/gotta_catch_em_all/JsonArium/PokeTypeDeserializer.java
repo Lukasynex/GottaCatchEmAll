@@ -48,15 +48,15 @@ public class PokeTypeDeserializer implements JsonDeserializer<PokeType> {
 
         if (in_effective != null && in_effective.size() > 0)
             for (int x = 0; x < in_effective.size(); x++)
-                inEffective += in_effective.get(x).getAsJsonObject().get("name").getAsString() + "|";
+                inEffective += in_effective.get(x).getAsJsonObject().get("name").getAsString() + ",";
 
         if (super_effective != null && super_effective.size() > 0)
             for (int x = 0; x < super_effective.size(); x++)
-                superEffective += super_effective.get(x).getAsJsonObject().get("name").getAsString() + "|";
+                superEffective += super_effective.get(x).getAsJsonObject().get("name").getAsString() + ",";
 
         if (weak_ness != null && weak_ness.size() > 0)
             for (int x = 0; x < weak_ness.size(); x++)
-                weak += weak_ness.get(x).getAsJsonObject().get("name").getAsString() + "|";
+                weak += weak_ness.get(x).getAsJsonObject().get("name").getAsString() + ",";
 
         return new PokeType(id, name, weak, inEffective, superEffective);
     }

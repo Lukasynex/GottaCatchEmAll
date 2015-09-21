@@ -126,7 +126,8 @@ public abstract class PokeAttacksAdapter extends RecyclerView.Adapter<PokeAttack
 
     @Override
     public void onBindViewHolder(final ViewHolder vh, final int position) {
-        Log.d(TAG, "onBindViewHolder");
+        Log.d(TAG, "binding [" + position + "]");
+
         if (dataset == null || dataset.size() <= position || dataset.get(position) == null)
             return;
         PokeMove poke = dataset.get(position);

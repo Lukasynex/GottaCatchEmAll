@@ -1,7 +1,6 @@
 package lukasz.marczak.pl.gotta_catch_em_all.fragments.fight;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.tt.whorlviewlibrary.WhorlView;
 
-import java.io.File;
 import java.util.List;
 
 import io.realm.Realm;
@@ -34,15 +32,13 @@ import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Randy;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeDetailDownloader;
 import lukasz.marczak.pl.gotta_catch_em_all.connection.PokeSpritesManager;
-import lukasz.marczak.pl.gotta_catch_em_all.data.BeaconsInfo;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Fightable;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 import lukasz.marczak.pl.gotta_catch_em_all.game.Engine;
-import lukasz.marczak.pl.gotta_catch_em_all.game.Player;
+import lukasz.marczak.pl.gotta_catch_em_all.game.SelectMenuEngine;
 
 
 public class FightRunningFragment extends Fragment implements Fightable {

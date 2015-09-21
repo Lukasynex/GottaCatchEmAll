@@ -102,7 +102,7 @@ public abstract class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter
 
     @Override
     public void onBindViewHolder(final ViewHolder vh, final int position) {
-        Log.d(TAG, "onBindViewHolder");
+        Log.d(TAG, "binding [" + position + "]");
         if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null)
             return;

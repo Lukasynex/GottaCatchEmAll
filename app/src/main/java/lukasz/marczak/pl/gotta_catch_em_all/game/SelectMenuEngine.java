@@ -1,4 +1,4 @@
-package lukasz.marczak.pl.gotta_catch_em_all.fragments.fight;
+package lukasz.marczak.pl.gotta_catch_em_all.game;
 
 import android.app.Activity;
 import android.app.Dialog;

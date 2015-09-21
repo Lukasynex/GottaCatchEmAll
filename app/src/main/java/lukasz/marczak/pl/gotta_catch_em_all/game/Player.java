@@ -9,7 +9,7 @@ public class Player {
     private PokeDetail detail;
     private int currentLevel;
     private String pokeName;
-private int hp;
+    private int hp;
 
     public int getHp() {
         return hp;
@@ -22,9 +22,11 @@ private int hp;
     public Player(String p) {
         pokeName = p;
     }
-public Player(){
-    hp=100;
-}
+
+    public Player() {
+        hp = 100;
+    }
+
     public PokeDetail getDetail() {
         return detail;
     }
