@@ -1,6 +1,5 @@
 package lukasz.marczak.pl.gotta_catch_em_all.adapters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,28 +9,24 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.realm.Realm;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.activities.PokeInfoActivity;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.data.NetPoke;
-import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
+import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmID;
-import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
-import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.RealmPokeFragment;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 
 /**
  * Created by Lukasz Marczak on 2015-08-23.
  */
-public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.ViewHolder> {
+public abstract class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.ViewHolder> {
     public static final String TAG = RealmPokeAdapter.class.getSimpleName();
-    private static List<NetPoke> dataset = new ArrayList<>();// = Collections.synchronizedList(new ArrayList<NetPoke>());
-    private Context context = null;
-    private RealmPokeFragment parent;
+    public static List<PokeID> dataset = new ArrayList<>();// = Collections.synchronizedList(new ArrayList<NetPoke>());
+    private Progressable context;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public View v;
@@ -48,33 +43,15 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         }
     }
 
-    public RealmPokeAdapter(RealmPokeFragment parent) {
-        this.context = parent.getActivity();
-        this.parent = parent;
+    public RealmPokeAdapter(Progressable parent) {
+        context = parent;
         List<RealmID> pokesUnSorted = Realm.getInstance(parent.getActivity()).where(RealmID.class)
                 .findAllSorted("id");
         dataset.clear();
         for (RealmID poke : pokesUnSorted) {
 //            if (!contains(dataset, poke))
-                dataset.add(new NetPoke(poke.getId(), poke.getName()));
+            dataset.add(DBManager.asPokeID(poke));
         }
-//        Collections.sort(dataset, new Comparator<NetPoke>() {
-//            @Override
-//            public int compare(NetPoke lhs, NetPoke rhs) {
-//                return lhs.getID() < rhs.getID() ? -1 : 1;
-//            }
-//        });
-        //dataset = dataset.subList(1,dataset.size());
-
-    }
-
-    private boolean contains(List<NetPoke> dataset, RealmPokeDetail poke) {
-
-        for (NetPoke netPoke : dataset) {
-            if (netPoke.getName() .equals(poke.getName()))
-                return true;
-        }
-        return false;
     }
 
     @Override
@@ -83,8 +60,7 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         // create a new view
         View v = android.view.LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.net_poke_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
 
@@ -94,8 +70,14 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         if (dataset == null || dataset.size() <= position
                 || dataset.get(position) == null) return;
 
-        NetPoke poke = dataset.get(position);
-        vh.id.setText(String.valueOf(poke.getID()));
+        if (position == dataset.size() - 1) {
+            Log.d(TAG, "loading more pokemons...");
+            downloadNewPokemons(getItemCount() + 1);
+            return;
+        }
+
+        final PokeID poke = dataset.get(position);
+        vh.id.setText(String.valueOf(poke.getId()));
         vh.name.setText(poke.getName());
         vh.dataParent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,12 +85,11 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
                 Log.d(TAG, "onClick " + position);
                 if (position < 0)
                     return;
-                NetPoke poke = dataset.get(position);
                 Log.i(TAG, "clicked item " + position);
-                Intent intent = new Intent(context, PokeInfoActivity.class);
-                intent.putExtra(PokeConstants.ID, poke.getID());
+                Intent intent = new Intent(context.getActivity(), PokeInfoActivity.class);
+                intent.putExtra(PokeConstants.ID, poke.getId());
                 intent.putExtra(PokeConstants.NAME, poke.getName());
-                context.startActivity(intent);
+                context.getActivity().startActivity(intent);
             }
         });
     }
@@ -121,4 +102,6 @@ public class RealmPokeAdapter extends RecyclerView.Adapter<RealmPokeAdapter.View
         }
         return dataset.size();
     }
+
+    public abstract void downloadNewPokemons(int fromThisPosition);
 }

@@ -23,12 +23,6 @@
             android:name=".activities.FightActivity"
             android:label="@string/title_activity_fight" />
         <activity
-            android:name=".activities.SecondActivity"
-            android:label="@string/title_activity_second" />
-        <activity
-            android:name=".activities.BundlerActivity"
-            android:label="@string/title_activity_bundler" />
-        <activity
             android:name=".activities.PokeInfoActivity"
             android:label="@string/title_activity_pokemon_info" />
         <activity
@@ -40,10 +34,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.SecondSplashActivity"
-            android:label="@string/title_activity_second_splash" >
         </activity>
     </application>
 

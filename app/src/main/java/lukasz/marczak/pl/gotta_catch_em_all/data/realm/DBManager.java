@@ -68,6 +68,9 @@ public class DBManager {
     public static PokeType asPokeType(RealmType t) {
         return new PokeType(t.getId(), t.getName(), t.getWeakness(), t.getIneffective(), t.getSuperEffective());
     }
+    public static PokeID asPokeID(RealmID t) {
+        return new PokeID(t.getId(), t.getName());
+    }
 
     public void savePokeAbility(PokeAbility pokeAbility) {
         Log.d(TAG, "saving pokeAbility " + pokeAbility.getId());

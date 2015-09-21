@@ -13,10 +13,16 @@ import android.view.ViewGroup;
 
 import com.tt.whorlviewlibrary.WhorlView;
 
+import java.util.List;
+
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.RealmPokeAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.RecyclerUtils;
+import lukasz.marczak.pl.gotta_catch_em_all.data.PokeID;
+import lukasz.marczak.pl.gotta_catch_em_all.download.PokeIDsDownloader;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 
-public class RealmPokeFragment extends Fragment {
+public class RealmPokeFragment extends Fragment implements Progressable {
 
     public static final String TAG = RealmPokeFragment.class.getSimpleName();
 
@@ -47,7 +53,26 @@ public class RealmPokeFragment extends Fragment {
         progressBar = (WhorlView) view.findViewById(R.id.whorlView);
         progressBar.setVisibility(View.GONE);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        pokedexAdapter = new RealmPokeAdapter(this);
+        pokedexAdapter = new RealmPokeAdapter(this) {
+            @Override
+            public void downloadNewPokemons(int fromThisPosition) {
+                Log.d(TAG, "downloadNewPokemons ");
+                new PokeIDsDownloader() {
+                    @Override
+                    public void onDataReceived(final List<PokeID> newPokes) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                RealmPokeAdapter.dataset.clear();
+                                RealmPokeAdapter.dataset.addAll(newPokes);
+                                notifyDataSetChanged();
+                                notifyItemRangeChanged(0, getItemCount());
+                            }
+                        });
+                    }
+                }.setup(RealmPokeFragment.this, fromThisPosition).download();
+            }
+        };
         recyclerView.setAdapter(pokedexAdapter);
         return view;
     }
@@ -66,5 +91,24 @@ public class RealmPokeFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void showProgressBar(boolean show) {
+        Log.d(TAG, "showProgressBar ");
+        int vis = show ? View.VISIBLE : View.GONE;
+        progressBar.setVisibility(vis);
+        if (!progressBar.isCircling() && progressBar.isShown()) {
+            progressBar.start();
+        } else if (!progressBar.isShown()) {
+            progressBar.stop();
+        }
+        recyclerView.setOnTouchListener(RecyclerUtils.disableTouchEvents(show));
+    }
+
+
+    @Override
+    public void setText(CharSequence s) {
+        Log.d(TAG, "setText " + s);
     }
 }

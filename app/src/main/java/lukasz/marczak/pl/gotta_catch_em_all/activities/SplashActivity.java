@@ -19,7 +19,7 @@ import com.hannesdorfmann.swipeback.transformer.SlideSwipeBackTransformer;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.FragmentAdapter;
 
-public class SplashActivity extends ActionBarActivity {
+public class SplashActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private int mPagerPosition;
@@ -28,10 +28,10 @@ public class SplashActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
         SwipeBack.attach(this, Position.LEFT)
                 .setContentView(R.layout.activity_splash)

@@ -26,7 +26,7 @@ import com.tt.whorlviewlibrary.WhorlView;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.PokeConstants;
-import lukasz.marczak.pl.gotta_catch_em_all.download.AllDataDownloader;
+import lukasz.marczak.pl.gotta_catch_em_all.download.First151Downloader;
 import lukasz.marczak.pl.gotta_catch_em_all.data.AppFirstLauncher;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokeTypesFragment;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.main.PokedexFragment;
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         if (isFirstLaunch) {
             AppFirstLauncher.INSTANCE.setup(this);
             downloadAllData();
-        }else{
+        } else {
             showProgressBar(false);
         }
     }
@@ -120,9 +120,7 @@ public class MainActivity extends AppCompatActivity {
     public void showProgressBar(boolean show) {
         Log.d(TAG, "showProgressBar " + show);
         int vis = show ? View.VISIBLE : View.GONE;
-        int inv = !show ? View.VISIBLE : View.GONE;
         progressBarLayout.setVisibility(vis);
-        main.setVisibility(inv);
     }
 
     private void downloadAllData() {
@@ -131,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 //        downloadSubscription = AppObservable.
 //                bindActivity(this, _getDownloadPokedexObservable())
 //                .subscribe(_getDummyObserver());
-        AllDataDownloader.INSTANCE.setupServices(this).downloadData(this);
+        First151Downloader.INSTANCE.setupServices(this).downloadData(this);
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {

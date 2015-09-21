@@ -53,6 +53,12 @@ public abstract class MovesDownloader {
             realm.commitTransaction();
             realm.close();
             onDataReceived(moves1);
+            context.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    context.showProgressBar(false);
+                }
+            });
             return;
         }
         Log.d(TAG, "start ");
@@ -124,6 +130,7 @@ public abstract class MovesDownloader {
                             @Override
                             public void run() {
                                 onDataReceived(moves);
+                                context.showProgressBar(false);
                             }
                         });
                         realm.commitTransaction();
@@ -146,6 +153,7 @@ public abstract class MovesDownloader {
                             @Override
                             public void run() {
                                 onDataReceived(moves);
+                                context.showProgressBar(false);
                             }
                         });
                         realm.commitTransaction();

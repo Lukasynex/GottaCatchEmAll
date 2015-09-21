@@ -93,7 +93,7 @@ public class Engine {
                     }
                 }.start(context, moves);
             }
-        }, 3000);
+        }, 2000);
         Config.IDLE_STATE = false;
     }
 }

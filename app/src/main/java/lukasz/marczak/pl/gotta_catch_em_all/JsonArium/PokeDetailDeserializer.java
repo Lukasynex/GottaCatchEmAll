@@ -60,19 +60,18 @@ public class PokeDetailDeserializer implements JsonDeserializer<PokeDetail> {
             }
         if (types.size() > 0)
             for (int x = 0; x < types.size(); x++) {
-                String typeId = types.get(x).getAsJsonObject().get("resource_uri")
-                        .getAsString();//.split("/")[4];
-                typeS += typeId + "|";
+                String typeId = types.get(x).getAsJsonObject().get("resource_uri").getAsString().split("/")[4];
+                typeS += typeId + ",";
             }
         if (evolutions.size() > 0)
             for (int x = 0; x < evolutions.size(); x++) {
                 String evolutionId = evolutions.get(x).getAsJsonObject().get("resource_uri").getAsString().split("/")[4];
-                evolutionS += evolutionId + "|";
+                evolutionS += evolutionId + ",";
             }
         if (abilities.size() > 0)
             for (int x = 0; x < abilities.size(); x++) {
                 String abilityId = abilities.get(x).getAsJsonObject().get("resource_uri").getAsString().split("/")[4];
-                abilitieS += abilityId + "|";
+                abilitieS += abilityId + ",";
             }
 
         int attack = object.get("attack").getAsInt();

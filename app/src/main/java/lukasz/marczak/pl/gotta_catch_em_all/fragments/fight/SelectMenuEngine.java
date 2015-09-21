@@ -1,10 +1,8 @@
 package lukasz.marczak.pl.gotta_catch_em_all.fragments.fight;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +16,7 @@ import android.widget.TextView;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.MyPokesAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokeAttacksAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.RecyclerUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 
@@ -98,9 +97,8 @@ public class SelectMenuEngine {
                 public void showProgressBar(boolean show) {
                     Log.d(TAG, "showProgressBar ");
                     int visbl = show ? View.VISIBLE : View.INVISIBLE;
-                    int invisibl = !show ? View.VISIBLE : View.INVISIBLE;
                     bar.setVisibility(visbl);
-                    attacksRecycler.setVisibility(invisibl);
+                    attacksRecycler.setOnTouchListener(RecyclerUtils.disableTouchEvents(show));
                 }
 
                 @Override
@@ -133,11 +131,7 @@ public class SelectMenuEngine {
     }
 
     public void BAG() {
-        //open bag to select pokeballs or potions or other stuff
-    }
-
-    public void FIGHT() {
-        //select attack
+        //open bag to select pokeBalls or potions or other stuff you have
     }
 
 }
