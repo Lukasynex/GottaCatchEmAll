@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.fab_in, R.anim.fab_out, R.anim.fab_in, R.anim.fab_out)
+                .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
                 .replace(R.id.content_frame, fragment)
                 .commit();
 
@@ -297,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (Config.CURRENT_FRAGMENT != 0) {
             selectItem(0);
-            overridePendingTransition(R.anim.abc_slide_in_top, R.anim.abc_slide_out_top);
         } else super.onBackPressed();
     }
 
