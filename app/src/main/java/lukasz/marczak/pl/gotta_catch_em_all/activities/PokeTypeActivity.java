@@ -31,9 +31,6 @@ public class PokeTypeActivity extends AppCompatActivity {
         realm.beginTransaction();
         RealmType typo = realm.where(RealmType.class).equalTo("id", id).findFirst();
         if (typo != null) {
-//            String[] weak = typo.getWeakness().split(",");
-//            String[] inEff = typo.getIneffective().split(",");
-//            String[] superEff = typo.getSuperEffective().split(",");
             setTitle(typo.getName());
             superEffective.setText("SuperEffective: " + typo.getSuperEffective());
             weakness.setText("Weakness: " + typo.getWeakness());
@@ -41,9 +38,9 @@ public class PokeTypeActivity extends AppCompatActivity {
             superEffective.setBackgroundColor(getResources().getColor(R.color.superEffective));
             weakness.setBackgroundColor(getResources().getColor(R.color.weakness));
             ineffective.setBackgroundColor(getResources().getColor(R.color.ineffective));
-
         }
-
+        realm.commitTransaction();
+        realm.close();
     }
 
     private void injectViews() {
@@ -51,7 +48,6 @@ public class PokeTypeActivity extends AppCompatActivity {
         superEffective = (TextView) findViewById(R.id.supereff);
         weakness = (TextView) findViewById(R.id.weakness);
         ineffective = (TextView) findViewById(R.id.ineff);
-
     }
 
     @Override

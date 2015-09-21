@@ -295,9 +295,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (Config.CURRENT_FRAGMENT != 0)
+        if (Config.CURRENT_FRAGMENT != 0) {
             selectItem(0);
-        else super.onBackPressed();
+            overridePendingTransition(R.anim.abc_slide_in_top, R.anim.abc_slide_out_top);
+        } else super.onBackPressed();
     }
 
     public void setActionBarTitle(String s) {
