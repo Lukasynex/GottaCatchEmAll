@@ -19,4 +19,8 @@ public class Randy {
     public static boolean randomAnswer() {
         return generator.nextBoolean();
     }
+
+    public static boolean withAccuracy(int accuracy) {
+        return from(101) < accuracy;
+    }
 }

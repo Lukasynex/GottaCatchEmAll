@@ -70,6 +70,13 @@ public class PokeDetail {
                 '}';
     }
 
+    public PokeDetail(PokeDetail poke) {
+        this(poke.getAttack(), poke.getCatchRate(), poke.getDefense(), poke.getEggCycles(), poke.getExp(), poke.getHappiness(),
+                poke.getHp(), poke.getNationalId(), poke.getPkdxId(), poke.getSpAtk(), poke.getSpDef(), poke.getSpeed(), poke.getTotal(), poke.getAbilities(),
+                poke.getCreated(), poke.getEvYield(), poke.getEvolutions(), poke.getGrowthRate(), poke.getHeight(), poke.getMaleFemaleRatio(),
+                poke.getModified(), poke.getMoves(), poke.getName(), poke.getResourceUri(), poke.getSpecies(), poke.getTypes(), poke.getWeight());
+    }
+
     public PokeDetail(int attack, int catchRate, int defense, int eggCycles, int exp,
                       int happiness, int hp, int nationalId, int pkdxId, int spAtk, int spDef, int speed, int total, String abilities, String created, String evYield, String evolutions, String growthRate, String height, String maleFemaleRatio, String modified, String moves, String name, String resourceUri, String species, String types, String weight) {
         this.attack = attack;
