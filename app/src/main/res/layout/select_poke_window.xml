@@ -28,7 +28,7 @@
         android:id="@+id/progressBarLayout1"
         android:layout_width="100sp"
         android:layout_height="100sp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/cancel1"

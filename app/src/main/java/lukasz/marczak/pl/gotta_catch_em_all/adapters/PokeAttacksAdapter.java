@@ -108,6 +108,7 @@ public abstract class PokeAttacksAdapter extends RecyclerView.Adapter<PokeAttack
                         dataset.addAll(moves);
                         notifyDataSetChanged();
                         notifyItemRangeChanged(0, dataset.size());
+                        context.showProgressBar(false);
                     }
                 });
             }

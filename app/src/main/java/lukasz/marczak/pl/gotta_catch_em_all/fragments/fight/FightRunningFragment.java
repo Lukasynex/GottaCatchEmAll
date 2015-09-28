@@ -37,6 +37,7 @@ import lukasz.marczak.pl.gotta_catch_em_all.data.PokeMove;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.DBManager;
 import lukasz.marczak.pl.gotta_catch_em_all.data.realm.RealmPokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Fightable;
+import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
 import lukasz.marczak.pl.gotta_catch_em_all.game.Engine;
 import lukasz.marczak.pl.gotta_catch_em_all.game.SelectMenuEngine;
 
@@ -189,9 +190,23 @@ public class FightRunningFragment extends Fragment implements Fightable {
                             case 0: {
                                 if (!Config.IDLE_STATE) {
                                     view.setBackgroundColor(Color.LTGRAY);
-
                                     Log.d(TAG, "onTouch select attack");
-                                    new SelectMenuEngine.FIGHT(FightRunningFragment.this) {
+                                    new SelectMenuEngine.FIGHT((Progressable)FightRunningFragment.this) {
+
+                                        @Override
+                                        public void showProgressBar(boolean show) {
+
+                                        }
+
+                                        @Override
+                                        public Activity getActivity() {
+                                            return FightRunningFragment.this.getActivity();
+                                        }
+
+                                        @Override
+                                        public void setText(CharSequence s) {
+
+                                        }
 
                                         @Override
                                         public void onAttackChosen(int position) {

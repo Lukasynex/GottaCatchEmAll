@@ -105,13 +105,9 @@ public abstract class MovesDownloader {
         }).doOnCompleted(new Action0() {
             @Override
             public void call() {
-                context.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "hide loader");
-                        context.showProgressBar(false);
-                    }
-                });
+                Log.d(TAG, "hide loader");
+                context.showProgressBar(false);
+
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PokeMove>() {

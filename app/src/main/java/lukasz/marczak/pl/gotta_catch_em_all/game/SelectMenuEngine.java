@@ -16,6 +16,7 @@ import android.widget.TextView;
 import lukasz.marczak.pl.gotta_catch_em_all.R;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.MyPokesAdapter;
 import lukasz.marczak.pl.gotta_catch_em_all.adapters.PokeAttacksAdapter;
+import lukasz.marczak.pl.gotta_catch_em_all.configuration.Config;
 import lukasz.marczak.pl.gotta_catch_em_all.configuration.RecyclerUtils;
 import lukasz.marczak.pl.gotta_catch_em_all.data.PokeDetail;
 import lukasz.marczak.pl.gotta_catch_em_all.fragments.Progressable;
@@ -64,18 +65,21 @@ public class SelectMenuEngine {
                     selectPokeWindow.dismiss();
                 }
             });
-            selectPokeWindow.show();
+            if (!Config.IDLE_STATE)
+                selectPokeWindow.show();
         }
 
     }
 
-    public static abstract class FIGHT {
+    public static abstract class FIGHT implements Progressable {
 
         public abstract void onAttackChosen(final int position);
 
         public abstract PokeDetail getPokeDetail();
 
         public abstract int getCurrentPokemonLevel();
+
+        ProgressBar bar;
 
         public FIGHT(final Progressable context) {
 
@@ -89,16 +93,23 @@ public class SelectMenuEngine {
             TextView cancelButton = (TextView) selectAttackWindow.findViewById(R.id.cancel1);
             TextView title1 = (TextView) selectAttackWindow.findViewById(R.id.title1);
             final RecyclerView attacksRecycler = (RecyclerView) selectAttackWindow.findViewById(R.id.recycler_view1);
-            final ProgressBar bar = (ProgressBar) selectAttackWindow.findViewById(R.id.progressBarLayout1);
+            bar = (ProgressBar) selectAttackWindow.findViewById(R.id.progressBarLayout1);
+//            bar.setVisibility(View.VISIBLE);
             attacksRecycler.setLayoutManager(new LinearLayoutManager(context.getActivity()));
             title1.setText("Select attack");
-            attacksRecycler.setAdapter(new PokeAttacksAdapter(context, getPokeDetail(), getCurrentPokemonLevel()) {
+            attacksRecycler.setAdapter(new PokeAttacksAdapter(this, getPokeDetail(), getCurrentPokemonLevel()) {
                 @Override
-                public void showProgressBar(boolean show) {
+                public void showProgressBar(final boolean show) {
                     Log.d(TAG, "showProgressBar ");
-                    int visbl = show ? View.VISIBLE : View.INVISIBLE;
-                    bar.setVisibility(visbl);
-                    attacksRecycler.setOnTouchListener(RecyclerUtils.disableTouchEvents(show));
+                    context.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "hiding progressBar from Menu");
+                            int visbl = show ? View.VISIBLE : View.GONE;
+                            bar.setVisibility(visbl);
+                            attacksRecycler.setOnTouchListener(RecyclerUtils.disableTouchEvents(show));
+                        }
+                    });
                 }
 
                 @Override
@@ -126,7 +137,8 @@ public class SelectMenuEngine {
                     selectAttackWindow.dismiss();
                 }
             });
-            selectAttackWindow.show();
+            if (!Config.IDLE_STATE)
+                selectAttackWindow.show();
         }
     }
 
